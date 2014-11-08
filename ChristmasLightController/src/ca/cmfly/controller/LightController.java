@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class LightController {
 
+	public static int MAX_INTENSITY = 0xcc;
 	private InetAddress address;
 	private int port;
 
@@ -55,7 +56,7 @@ public class LightController {
 			}
 			for (int j = 0; j < max; j++) {
 				// LightData lightdata = new LightData(i, j, randInt(0,3), randInt(0,15), randInt(0,15), randInt(0,15), 6);
-				LightData lightdata = new LightData(i, j, randInt(1, 13), 0, 0, 0, 6);
+				LightData lightdata = new LightData(i, j, randInt(1, 13), 0, 0, 0, randInt(1, MAX_INTENSITY));
 				this.sendMessage(lightdata);
 			}
 		}
@@ -67,7 +68,7 @@ public class LightController {
 		Collections.shuffle(lightIds);
 
 		for (LightId lightId : lightIds) {
-			LightData lightdata = new LightData(lightId.strandNum, lightId.lightNum, randInt(1, 13), 0, 0, 0, 6);
+			LightData lightdata = new LightData(lightId.strandNum, lightId.lightNum, randInt(1, 13), 0, 0, 0, randInt(1, MAX_INTENSITY));
 			this.sendMessage(lightdata);
 			try {
 				Thread.sleep(delay);
@@ -80,7 +81,7 @@ public class LightController {
 	public void lightsOff() throws IOException {
 		List<LightId> lightIds = getLightIds();
 		for (LightId lightId : lightIds) {
-			LightData lightdata = new LightData(lightId.strandNum, lightId.lightNum, 0, 0, 0, 0, 6);
+			LightData lightdata = new LightData(lightId.strandNum, lightId.lightNum, 0, 0, 0, 0, 0);
 			this.sendMessage(lightdata);
 		}
 	}
@@ -91,7 +92,7 @@ public class LightController {
 		Collections.shuffle(lightIds);
 
 		for (LightId lightId : lightIds) {
-			LightData lightdata = new LightData(lightId.strandNum, lightId.lightNum, 0, 0, 0, 0, 6);
+			LightData lightdata = new LightData(lightId.strandNum, lightId.lightNum, 0, 0, 0, 0, 0);
 			this.sendMessage(lightdata);
 			try {
 				Thread.sleep(delay);
@@ -119,7 +120,7 @@ public class LightController {
 
 		List<LightId> lightIds = getLightIds();
 		for (LightId lightId : lightIds) {
-			LightData lightdata = new LightData(lightId.strandNum, lightId.lightNum, 0, 0, 0, 0, 6);
+			LightData lightdata = new LightData(lightId.strandNum, lightId.lightNum, 0, 0, 0, 0, 0);
 			this.sendMessage(lightdata);
 			try {
 				Thread.sleep(delay);
@@ -168,7 +169,7 @@ public class LightController {
 
 			sand.randomizeLightColors();
 			sand.lightsOff();
-			
+
 			sand.lightsOnRandom(10);
 			sand.lightsOffRandom(10);
 
