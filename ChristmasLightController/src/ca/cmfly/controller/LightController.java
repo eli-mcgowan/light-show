@@ -5,6 +5,9 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -44,7 +47,7 @@ public class LightController {
 		return randomNum;
 	}
 
-	public void randomizeLights() throws JsonProcessingException, IOException {
+	public void randomizeLightColors() throws JsonProcessingException, IOException {
 		for (int i = 1; i < 14; i++) {
 			int max = 25;
 			if (i == 13) {
@@ -58,49 +61,70 @@ public class LightController {
 		}
 	}
 
-	public void lightsOff() throws IOException {
+	public void lightsOnRandom(long delay) throws IOException {
 
-		for (int i = 1; i < 14; i++) {
-			int max = 25;
-			if (i == 13) {
-				max = 50;
-			}
-			for (int j = 0; j < max; j++) {
-				LightData lightdata = new LightData(i, j, 0, 0, 0, 0, 6);
-				this.sendMessage(lightdata);
+		List<LightId> lightIds = getLightIds();
+		Collections.shuffle(lightIds);
+
+		for (LightId lightId : lightIds) {
+			LightData lightdata = new LightData(lightId.strandNum, lightId.lightNum, randInt(1, 13), 0, 0, 0, 6);
+			this.sendMessage(lightdata);
+			try {
+				Thread.sleep(delay);
+			} catch (InterruptedException e) {
+
 			}
 		}
 	}
-	
-	public void lightsOffRandom() throws IOException {
 
+	public void lightsOff() throws IOException {
+		List<LightId> lightIds = getLightIds();
+		for (LightId lightId : lightIds) {
+			LightData lightdata = new LightData(lightId.strandNum, lightId.lightNum, 0, 0, 0, 0, 6);
+			this.sendMessage(lightdata);
+		}
+	}
+
+	public void lightsOffRandom(long delay) throws IOException {
+
+		List<LightId> lightIds = getLightIds();
+		Collections.shuffle(lightIds);
+
+		for (LightId lightId : lightIds) {
+			LightData lightdata = new LightData(lightId.strandNum, lightId.lightNum, 0, 0, 0, 0, 6);
+			this.sendMessage(lightdata);
+			try {
+				Thread.sleep(delay);
+			} catch (InterruptedException e) {
+
+			}
+		}
+	}
+
+	private List<LightId> getLightIds() {
+		List<LightId> lightIds = new ArrayList<LightId>();
 		for (int i = 1; i < 14; i++) {
 			int max = 25;
 			if (i == 13) {
 				max = 50;
 			}
 			for (int j = 0; j < max; j++) {
-				LightData lightdata = new LightData(i, j, 0, 0, 0, 0, 6);
-				this.sendMessage(lightdata);
+				lightIds.add(new LightId(i, j));
 			}
 		}
+		return lightIds;
 	}
 
 	public void lightsOffWithDelay(long delay) throws IOException {
 
-		for (int i = 1; i < 14; i++) {
-			int max = 25;
-			if (i == 13) {
-				max = 50;
-			}
-			for (int j = 0; j < max; j++) {
-				LightData lightdata = new LightData(i, j, 0, 0, 0, 0, 6);
-				this.sendMessage(lightdata);
-				try {
-					Thread.sleep(delay);
-				} catch (InterruptedException e) {
+		List<LightId> lightIds = getLightIds();
+		for (LightId lightId : lightIds) {
+			LightData lightdata = new LightData(lightId.strandNum, lightId.lightNum, 0, 0, 0, 0, 6);
+			this.sendMessage(lightdata);
+			try {
+				Thread.sleep(delay);
+			} catch (InterruptedException e) {
 
-				}
 			}
 		}
 	}
@@ -141,11 +165,15 @@ public class LightController {
 			int port = 8888;
 
 			LightController sand = new LightController(host, port);
-			// Turn lights on
-			sand.randomizeLights();
 
-			// Turn the lights off
-			sand.lightsOffWithDelay(100);
+			sand.randomizeLightColors();
+			sand.lightsOff();
+			
+			sand.lightsOnRandom(10);
+			sand.lightsOffRandom(10);
+
+			sand.randomizeLightColors();
+			sand.lightsOffWithDelay(10);
 
 		} catch (Exception e) {
 			System.err.println(e);
