@@ -52,6 +52,7 @@ public class LightController {
 	}
 
 	public void randomizeLightColors() throws JsonProcessingException, IOException {
+		// TODO: Convert to using getLightIds()
 		for (int i = 1; i < 14; i++) {
 			int max = 25;
 			if (i == 13) {
