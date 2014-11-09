@@ -15,7 +15,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class LightController {
 
-	public static int MAX_INTENSITY = 0xcc;
+	public static final int MAX_INTENSITY = 0xcc;
+	private static final int PORT = 7654; // 8888
+	private static final String HOST_ADDRESS = "localhost"; //"192.168.1.61"
+	
 	private InetAddress address;
 	private int port;
 
@@ -162,8 +165,8 @@ public class LightController {
 
 	public static void main(String args[]) {
 		try {
-			String host = "192.168.1.61";
-			int port = 8888;
+			String host = HOST_ADDRESS;
+			int port = PORT;
 
 			LightController sand = new LightController(host, port);
 
