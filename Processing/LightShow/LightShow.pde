@@ -1,4 +1,11 @@
 import java.util.StringTokenizer;
+import hypermedia.net.*;
+
+// UDP receive values
+int PORT_RX = 7654;
+String HOST_IP = "localhost";//IP Address of the PC in which this App is running
+UDP udp;//Create UDP object for recieving
+String lastValue;
 
 LightStrand[] lightStrands;
 LightStrand lightStrand1;
@@ -17,6 +24,12 @@ PFont f;
 
 void setup(){
  size(1000, 500);
+ 
+ udp= new UDP(this, PORT_RX, HOST_IP);
+ udp.log(true);
+ udp.listen(true);
+ lastValue = "";
+ 
  lightStrands = new LightStrand[2];
  lightStrands[0] = new LightStrand(24);
  lightStrands[1] = new LightStrand(18);
@@ -56,6 +69,21 @@ void draw(){
   text(instructions,10,435);
   text("Current: " + typing,10,475);
   text("Last: " + lastCommand,10,495);
+}
+
+void receive(byte[] data, String HOST_IP, int PORT_RX){
+  lastValue=new String(data);
+  println(lastValue);
+  JSONObject json = JSONObject.parse(lastValue);
+ // json = loadJSONObject(lastValue);
+  int stringNum = json.getInt("string");
+  int bulbNum = json.getInt("bulb");
+  int bulbColor = json.getInt("color");
+  int red = json.getInt("r");
+  int green = json.getInt("g");
+  int blue = json.getInt("b");
+  int brightness = json.getInt("brightness");
+  println(bulbColor);
 }
 
 void keyPressed() {
