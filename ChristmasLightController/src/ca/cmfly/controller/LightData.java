@@ -1,47 +1,47 @@
 package ca.cmfly.controller;
 
 public class LightData {
-	int string;
-	int bulb;
-	int color;
+	int s;
+	int l;
+	int c;
 	int r;
 	int g;
 	int b;
-	int brightness; //MAX_INTENSITY = 0xcc -> 204
+	int i; // MAX_INTENSITY = 0xcc -> 204
 
-	public LightData(int string, int bulb, int color, int r, int g, int b, int brightness) {
+	public LightData(int s, int l, int c, int r, int g, int b, int i) {
 		super();
-		this.string = string;
-		this.bulb = bulb;
-		this.color = color;
+		this.s = s;
+		this.l = l;
+		this.c = c;
 		this.r = r;
 		this.g = g;
 		this.b = b;
-		this.brightness = brightness;
+		this.i = i;
 	}
 
-	public int getString() {
-		return string;
+	public int getS() {
+		return s;
 	}
 
-	public void setString(int string) {
-		this.string = string;
+	public void setS(int s) {
+		this.s = s;
 	}
 
-	public int getBulb() {
-		return bulb;
+	public int getL() {
+		return l;
 	}
 
-	public void setBulb(int bulb) {
-		this.bulb = bulb;
+	public void setL(int l) {
+		this.l = l;
 	}
 
-	public int getColor() {
-		return color;
+	public int getC() {
+		return c;
 	}
 
-	public void setColor(int color) {
-		this.color = color;
+	public void setC(int c) {
+		this.c = c;
 	}
 
 	public int getR() {
@@ -68,12 +68,12 @@ public class LightData {
 		this.b = b;
 	}
 
-	public int getBrightness() {
-		return brightness;
+	public int getI() {
+		return i;
 	}
 
-	public void setBrightness(int brightness) {
-		this.brightness = brightness;
+	public void setI(int i) {
+		this.i = i;
 	}
 
 }

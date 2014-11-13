@@ -49,17 +49,12 @@ public class LightController {
 	}
 
 	public void randomizeLightColors() throws JsonProcessingException, IOException {
-		for (int i = 1; i < 14; i++) {
-			int max = 25;
-			if (i == 13) {
-				max = 50;
-			}
-			for (int j = 0; j < max; j++) {
-				// LightData lightdata = new LightData(i, j, randInt(0,3), randInt(0,15), randInt(0,15), randInt(0,15), 6);
-				LightData lightdata = new LightData(i, j, randInt(1, 13), 0, 0, 0, randInt(1, MAX_INTENSITY));
-				this.sendMessage(lightdata);
-			}
+		List<LightId> lightIds = getLightIds();
+		for (LightId lightId : lightIds) {
+			LightData lightdata = new LightData(lightId.strandNum, lightId.lightNum, randInt(1, 13), 0, 0, 0, randInt(1, MAX_INTENSITY));
+			this.sendMessage(lightdata);
 		}
+
 	}
 
 	public void lightsOnRandom(long delay) throws IOException {
@@ -102,7 +97,7 @@ public class LightController {
 		}
 	}
 
-	private List<LightId> getLightIds() {
+	public static List<LightId> getLightIds() {
 		List<LightId> lightIds = new ArrayList<LightId>();
 		for (int i = 1; i < 14; i++) {
 			int max = 25;
@@ -130,16 +125,16 @@ public class LightController {
 		}
 	}
 
-	public String sendMessage(LightCommand command) {
-		return null;
+	public String sendMessage(LightCommand command) throws IOException {
+		ObjectMapper mapper = new ObjectMapper();
+		String message = mapper.writeValueAsString(command);
+		return this.sendMessage(message);
 	}
 
 	public String sendMessage(LightData lightdata) throws IOException {
+		LightDataCommand ldc = new LightDataCommand(lightdata);
 		ObjectMapper mapper = new ObjectMapper();
-		String message = mapper.writeValueAsString(lightdata);
-		System.out.println("Bytes: " + new String(message));
-		System.out.println("Size: " + message.length());
-
+		String message = mapper.writeValueAsString(ldc);
 		return this.sendMessage(message);
 	}
 

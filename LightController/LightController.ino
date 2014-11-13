@@ -1,7 +1,7 @@
 #include <SPI.h>         // needed for Arduino versions later than 0018
 #include <Ethernet.h>
 #include <EthernetUdp.h>
-#define UDP_TX_PACKET_MAX_SIZE 80 // Current JSON is 58 - 60...
+#define UDP_TX_PACKET_MAX_SIZE 1280 // Current JSON is 70 -> 1210
 #include <G35String.h>
 #include <JsonParser.h>
 using namespace ArduinoJson::Parser;
@@ -45,7 +45,7 @@ G35String lights_12(G35_PIN_12, LIGHT_COUNT);
 G35String lights_13(G35_PIN_13, LIGHT_COUNT_LARGE);
 
 // Define JSON parser can handle 16 parts
-JsonParser<16> parser;
+JsonParser<380> parser;
 
 
 // Enter a MAC address and IP address for your controller below.
@@ -58,17 +58,13 @@ unsigned int localPort = 8888;      // local port to listen on
 // buffers for receiving and sending data
 char packetBuffer[UDP_TX_PACKET_MAX_SIZE]; //buffer to hold incoming packet,
 char  ReplyBuffer[] = "acknowledged";       // a string to send back
+char  ReplyError[] = "error";       // a string to send back
 
 // An EthernetUDP instance to let us send and receive packets over UDP
 EthernetUDP Udp;
 
 void setup()
 {
-
-  // Start the Ethernet and UDP:
-  Ethernet.begin(mac);
-  Udp.begin(localPort);
-
   // Initialize lights
   delay(1000);
   lights_1.enumerate();
@@ -97,61 +93,68 @@ void setup()
   delay(10);
   lights_13.enumerate();
 
+  // Start the Ethernet and UDP:
+  Ethernet.begin(mac);
+  Udp.begin(localPort);
+
   //Create Serial Object
-  Serial.begin(115200);
+  Serial.begin(9600);
+
+  resetPacketBuffer();
+  Serial.println(F("We are good to go!"));
 }
 
+void resetPacketBuffer() {
+  memset(packetBuffer, 0, UDP_TX_PACKET_MAX_SIZE);
+}
 
+void processCommand(ArduinoJson::Parser::JsonObject root) {
+  Serial.print(F("Sending Command: "));
+  long lightStringIndex  = root["s"];
+  long bulbIndex         = root["l"];
+  long colorSelect       = root["c"];
+  long r                 = root["r"];
+  long g                 = root["g"];
+  long b                 = root["b"];
+  long brightness        = root["i"];
 
+  // Get the String
+  setString(lightStringIndex);
 
-void loop()
-{
+  if (brightness > G35::MAX_INTENSITY) {
+    brightness == G35::MAX_INTENSITY;
+  }
+  if (brightness < 0) {
+    brightness = 0;
+  }
+  // Apply Light settings
+  lights->set_color_if_in_range(bulbIndex, brightness, getColor(colorSelect, r, g, b));
+  Serial.print(F("String: "));
+  Serial.print(lightStringIndex);
+  Serial.print(F(", Bulb: "));
+  Serial.print(bulbIndex);
+  Serial.print(F(", Color: "));
+  Serial.print(colorSelect);
+  Serial.print(F(", Intensity: "));
+  Serial.println(brightness);
 
-  // What the JSON looks like {"string":1,"bulb":2,"r":3,"g":4,"b":5,"brightness":6}
+}
 
-  // if there's data available, read a packet
-  int packetSize = Udp.parsePacket();
-  if (packetSize)
+void processArrayOfCommands(ArduinoJson::Parser::JsonObject root) {
+  JsonArray commands = root["lightData"];
+  if (!commands.success())
   {
-    Serial.print("Received packet of size: ");
-    Serial.println(packetSize);
-
-    // read the packet into packetBufffer
-    Udp.read(packetBuffer, UDP_TX_PACKET_MAX_SIZE);
-
-    JsonObject root = parser.parse(packetBuffer);
-    if (!root.success())
-    {
-      error();
-      return;
-    }
-
-    long lightStringIndex  = root["string"];
-    long bulbIndex         = root["bulb"];
-    long colorSelect       = root["color"];
-    long r                 = root["r"];
-    long g                 = root["g"];
-    long b                 = root["b"];
-    long brightness        = root["brightness"];
-
-    // Get the String
-    setString(lightStringIndex);
-
-    if (brightness > G35::MAX_INTENSITY) {
-      brightness == G35::MAX_INTENSITY;
-    }
-    if (brightness < 0) {
-      brightness = 0;
-    }
-    // Apply Light settings
-    lights->set_color_if_in_range(bulbIndex, brightness, getColor(colorSelect, r, g, b));
-
-    //send a reply, to the IP address and port that sent us the packet we received
-    Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
-    Udp.write(ReplyBuffer);
-    Udp.endPacket();
+    error2();
+    resetPacketBuffer();
+    return;
+  }
+  for (int i = 0; i < commands.size(); ++i)
+  {
+    processCommand(commands[i]);
   }
 }
+
+
 
 color_t getColor(long colorSelect, long r, long g, long b) {
   color_t color = COLOR(r, g, b);
@@ -218,7 +221,7 @@ void setString(long lightStringIndex) {
 }
 
 void error() {
-  Serial.println("JsonParser.parse() failed");
+  Serial.println(F("JsonParser.parse() failed"));
   lights = &lights_13;
   lights->fill_color(0, lights->get_light_count(), G35::MAX_INTENSITY, COLOR_WARMWHITE);
   delay(100);
@@ -228,4 +231,71 @@ void error() {
   delay(100);
   lights->fill_color(0, lights->get_light_count(), G35::MAX_INTENSITY, COLOR_RED);
   delay(100);
+
+  Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
+  Udp.write(ReplyError);
+  Udp.endPacket();
+}
+
+void error2() {
+  Serial.println(F("JsonParser2.parse() failed"));
+  lights = &lights_13;
+  lights->fill_color(0, lights->get_light_count(), G35::MAX_INTENSITY, COLOR_WARMWHITE);
+  delay(100);
+  lights->fill_color(0, lights->get_light_count(), G35::MAX_INTENSITY, COLOR_BLUE);
+  delay(100);
+  lights->fill_color(0, lights->get_light_count(), G35::MAX_INTENSITY, COLOR_WARMWHITE);
+  delay(100);
+  lights->fill_color(0, lights->get_light_count(), G35::MAX_INTENSITY, COLOR_BLUE);
+  delay(100);
+
+  Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
+  Udp.write(ReplyError);
+  Udp.endPacket();
+}
+
+void loop()
+{
+
+  // What the JSON looks like {"string":1,"bulb":2,"r":3,"g":4,"b":5,"brightness":6}
+
+  // if there's data available, read a packet
+  int packetSize = Udp.parsePacket();
+  if (packetSize)
+  {
+    Serial.print(F("Received packet of size: "));
+    Serial.println(packetSize);
+
+    // read the packet into packetBufffer
+    Udp.read(packetBuffer, UDP_TX_PACKET_MAX_SIZE);
+    Serial.print(F("Data: "));
+    Serial.println(packetBuffer);
+
+    JsonObject root = parser.parse(packetBuffer);
+    if (!root.success())
+    {
+      error();
+      resetPacketBuffer();
+      return;
+    }
+    long commandNum  = root["command"];
+    Serial.print(F("Got command: "));
+    Serial.println(commandNum);
+    if (commandNum == 0) {
+      processCommand(root["lightData"]);
+    } else if (commandNum == 1) {
+      processArrayOfCommands(root);
+    } else {
+      Serial.print(F("Unknown Command: "));
+      Serial.println(commandNum);
+      error();
+    }
+
+    //send a reply, to the IP address and port that sent us the packet we received
+    Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
+    Udp.write(ReplyBuffer);
+    Udp.endPacket();
+    resetPacketBuffer();
+  }
+
 }
