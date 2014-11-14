@@ -57,8 +57,8 @@ unsigned int localPort = 8888;      // local port to listen on
 
 // buffers for receiving and sending data
 char packetBuffer[UDP_TX_PACKET_MAX_SIZE]; //buffer to hold incoming packet,
-char  ReplyBuffer[] = "acknowledged";       // a string to send back
-char  ReplyError[] = "error";       // a string to send back
+char  ReplyBuffer[] = "OK";       // a string to send back
+char  ReplyError[] = "ERR";       // a string to send back
 
 // An EthernetUDP instance to let us send and receive packets over UDP
 EthernetUDP Udp;
@@ -254,6 +254,22 @@ void error2() {
   Udp.endPacket();
 }
 
+void allOff() {
+  lights_1.broadcast_intensity(0);
+  lights_2.broadcast_intensity(0);
+  lights_3.broadcast_intensity(0);
+  lights_4.broadcast_intensity(0);
+  lights_5.broadcast_intensity(0);
+  lights_6.broadcast_intensity(0);
+  lights_7.broadcast_intensity(0);
+  lights_8.broadcast_intensity(0);
+  lights_9.broadcast_intensity(0);
+  lights_10.broadcast_intensity(0);
+  lights_11.broadcast_intensity(0);
+  lights_12.broadcast_intensity(0);
+  lights_13.broadcast_intensity(0);
+}
+
 void loop()
 {
 
@@ -285,7 +301,9 @@ void loop()
       processCommand(root["lightData"]);
     } else if (commandNum == 1) {
       processArrayOfCommands(root);
-    } else {
+    } else if(commandNum == 2){
+      allOff();
+    }else {
       Serial.print(F("Unknown Command: "));
       Serial.println(commandNum);
       error();

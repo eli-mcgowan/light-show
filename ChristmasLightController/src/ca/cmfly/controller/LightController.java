@@ -81,6 +81,12 @@ public class LightController {
 		}
 	}
 
+	public void lightsOffQuickly() throws IOException {
+		LightDataCommand ldc = new LightDataCommand();
+		ldc.setCommand(2);
+		this.sendMessage(ldc);
+	}
+
 	public void lightsOffRandom(long delay) throws IOException {
 
 		List<LightId> lightIds = getLightIds();
@@ -131,11 +137,15 @@ public class LightController {
 		return this.sendMessage(message);
 	}
 
+	public String sendMessage(LightDataCommand lightdataCommand) throws IOException {
+		ObjectMapper mapper = new ObjectMapper();
+		String message = mapper.writeValueAsString(lightdataCommand);
+		return this.sendMessage(message);
+	}
+
 	public String sendMessage(LightData lightdata) throws IOException {
 		LightDataCommand ldc = new LightDataCommand(lightdata);
-		ObjectMapper mapper = new ObjectMapper();
-		String message = mapper.writeValueAsString(ldc);
-		return this.sendMessage(message);
+		return this.sendMessage(ldc);
 	}
 
 	public String sendMessage(String message) throws IOException {
@@ -150,7 +160,7 @@ public class LightController {
 		DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 		dsocket.receive(receivePacket);
 		String response = new String(receivePacket.getData());
-		System.out.println("FROM SERVER: " + response);
+		//System.out.println("FROM SERVER: " + response);
 		dsocket.close();
 		return response;
 	}
