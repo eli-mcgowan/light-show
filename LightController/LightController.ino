@@ -50,7 +50,8 @@ JsonParser<380> parser;
 
 // Enter a MAC address and IP address for your controller below.
 byte mac[] = {
-  0x90, 0xA2, 0xDA, 0x0E, 0xAF, 0x5D
+  0x90, 0xA2, 0xDA, 0x0E, 0xAF, 0x5D // Live system
+  //0x90, 0xA2, 0xDA, 0x0E, 0xAF, 0x5E // Test System
 };
 
 unsigned int localPort = 8888;      // local port to listen on
@@ -109,7 +110,7 @@ void resetPacketBuffer() {
 }
 
 void processCommand(ArduinoJson::Parser::JsonObject root) {
-  Serial.print(F("Sending Command: "));
+  //Serial.println(F("Sending Command"));
   long lightStringIndex  = root["s"];
   long bulbIndex         = root["l"];
   long colorSelect       = root["c"];
@@ -129,14 +130,14 @@ void processCommand(ArduinoJson::Parser::JsonObject root) {
   }
   // Apply Light settings
   lights->set_color_if_in_range(bulbIndex, brightness, getColor(colorSelect, r, g, b));
-  Serial.print(F("String: "));
-  Serial.print(lightStringIndex);
-  Serial.print(F(", Bulb: "));
-  Serial.print(bulbIndex);
-  Serial.print(F(", Color: "));
-  Serial.print(colorSelect);
-  Serial.print(F(", Intensity: "));
-  Serial.println(brightness);
+  //Serial.print(F("String: "));
+  //Serial.print(lightStringIndex);
+  //Serial.print(F(", Bulb: "));
+  //Serial.print(bulbIndex);
+  //Serial.print(F(", Color: "));
+  //Serial.print(colorSelect);
+  //Serial.print(F(", Intensity: "));
+  //Serial.println(brightness);
 
 }
 
@@ -254,21 +255,43 @@ void error2() {
   Udp.endPacket();
 }
 
-void allOff() {
-  lights_1.broadcast_intensity(0);
-  lights_2.broadcast_intensity(0);
-  lights_3.broadcast_intensity(0);
-  lights_4.broadcast_intensity(0);
-  lights_5.broadcast_intensity(0);
-  lights_6.broadcast_intensity(0);
-  lights_7.broadcast_intensity(0);
-  lights_8.broadcast_intensity(0);
-  lights_9.broadcast_intensity(0);
-  lights_10.broadcast_intensity(0);
-  lights_11.broadcast_intensity(0);
-  lights_12.broadcast_intensity(0);
-  lights_13.broadcast_intensity(0);
+void allOffFade(long fadeDelay) {
+  //Serial.print("Fade Delay: ");
+  //Serial.println(fadeDelay);
+  if (fadeDelay <= 0) {
+    lights_1.broadcast_intensity(0);
+    lights_2.broadcast_intensity(0);
+    lights_3.broadcast_intensity(0);
+    lights_4.broadcast_intensity(0);
+    lights_5.broadcast_intensity(0);
+    lights_6.broadcast_intensity(0);
+    lights_7.broadcast_intensity(0);
+    lights_8.broadcast_intensity(0);
+    lights_9.broadcast_intensity(0);
+    lights_10.broadcast_intensity(0);
+    lights_11.broadcast_intensity(0);
+    lights_12.broadcast_intensity(0);
+    lights_13.broadcast_intensity(0);
+  } else {
+    for (int i = G35::MAX_INTENSITY; i >= 0; i--) {
+      lights_1.broadcast_intensity(i);
+      lights_2.broadcast_intensity(i);
+      lights_3.broadcast_intensity(i);
+      lights_4.broadcast_intensity(i);
+      lights_5.broadcast_intensity(i);
+      lights_6.broadcast_intensity(i);
+      lights_7.broadcast_intensity(i);
+      lights_8.broadcast_intensity(i);
+      lights_9.broadcast_intensity(i);
+      lights_10.broadcast_intensity(i);
+      lights_11.broadcast_intensity(i);
+      lights_12.broadcast_intensity(i);
+      lights_13.broadcast_intensity(i);
+      delay(fadeDelay);
+    }
+  }
 }
+
 
 void loop()
 {
@@ -279,13 +302,13 @@ void loop()
   int packetSize = Udp.parsePacket();
   if (packetSize)
   {
-    Serial.print(F("Received packet of size: "));
-    Serial.println(packetSize);
+    //Serial.print(F("Received packet of size: "));
+    //Serial.println(packetSize);
 
     // read the packet into packetBufffer
     Udp.read(packetBuffer, UDP_TX_PACKET_MAX_SIZE);
-    Serial.print(F("Data: "));
-    Serial.println(packetBuffer);
+    //Serial.print(F("Data: "));
+    //Serial.println(packetBuffer);
 
     JsonObject root = parser.parse(packetBuffer);
     if (!root.success())
@@ -294,18 +317,18 @@ void loop()
       resetPacketBuffer();
       return;
     }
-    long commandNum  = root["command"];
+    char* command  = root["command"];
     Serial.print(F("Got command: "));
-    Serial.println(commandNum);
-    if (commandNum == 0) {
+    Serial.println(command);
+    if (String(F("0")).equalsIgnoreCase(command)) {
       processCommand(root["lightData"]);
-    } else if (commandNum == 1) {
+    } else if (String(F("1")).equalsIgnoreCase(command)) {
       processArrayOfCommands(root);
-    } else if(commandNum == 2){
-      allOff();
-    }else {
+    } else if (String(F("2")).equalsIgnoreCase(command)) {
+      allOffFade(root["delay"]);
+    } else {
       Serial.print(F("Unknown Command: "));
-      Serial.println(commandNum);
+      Serial.println(command);
       error();
     }
 

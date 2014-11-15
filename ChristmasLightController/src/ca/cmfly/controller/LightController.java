@@ -10,6 +10,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import ca.cmfly.controller.commands.Command;
+import ca.cmfly.controller.commands.FadeCommand;
+import ca.cmfly.controller.commands.LightData;
+import ca.cmfly.controller.commands.LightCommand;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -49,22 +54,17 @@ public class LightController {
 	}
 
 	public void randomizeLightColors() throws JsonProcessingException, IOException {
-		List<LightId> lightIds = getLightIds();
-		for (LightId lightId : lightIds) {
-			LightData lightdata = new LightData(lightId.strandNum, lightId.lightNum, randInt(1, 13), 0, 0, 0, randInt(1, MAX_INTENSITY));
-			this.sendMessage(lightdata);
-		}
-
+		randomizeLightColors(0, false);
 	}
 
-	public void lightsOnRandom(long delay) throws IOException {
+	public void randomizeLightColors(long delay, boolean shuffle) throws IOException {
 
 		List<LightId> lightIds = getLightIds();
 		Collections.shuffle(lightIds);
 
 		for (LightId lightId : lightIds) {
 			LightData lightdata = new LightData(lightId.strandNum, lightId.lightNum, randInt(1, 13), 0, 0, 0, randInt(1, MAX_INTENSITY));
-			this.sendMessage(lightdata);
+			this.sendMessage(new LightCommand(lightdata));
 			try {
 				Thread.sleep(delay);
 			} catch (InterruptedException e) {
@@ -77,14 +77,19 @@ public class LightController {
 		List<LightId> lightIds = getLightIds();
 		for (LightId lightId : lightIds) {
 			LightData lightdata = new LightData(lightId.strandNum, lightId.lightNum, 0, 0, 0, 0, 0);
-			this.sendMessage(lightdata);
+			this.sendMessage(new LightCommand(lightdata));
 		}
 	}
 
 	public void lightsOffQuickly() throws IOException {
-		LightDataCommand ldc = new LightDataCommand();
-		ldc.setCommand(2);
-		this.sendMessage(ldc);
+		FadeCommand fc = new FadeCommand();
+		this.sendMessage(fc);
+	}
+
+	public void lightsOffFade(int fadeDelay) throws IOException {
+		FadeCommand fc = new FadeCommand();
+		fc.setDelay(fadeDelay);
+		this.sendMessage(fc);
 	}
 
 	public void lightsOffRandom(long delay) throws IOException {
@@ -94,7 +99,7 @@ public class LightController {
 
 		for (LightId lightId : lightIds) {
 			LightData lightdata = new LightData(lightId.strandNum, lightId.lightNum, 0, 0, 0, 0, 0);
-			this.sendMessage(lightdata);
+			this.sendMessage(new LightCommand(lightdata));
 			try {
 				Thread.sleep(delay);
 			} catch (InterruptedException e) {
@@ -104,14 +109,26 @@ public class LightController {
 	}
 
 	public static List<LightId> getLightIds() {
+		return getLightIds(true);
+	}
+
+	public static List<LightId> getLightIds(boolean live) {
 		List<LightId> lightIds = new ArrayList<LightId>();
-		for (int i = 1; i < 14; i++) {
-			int max = 25;
-			if (i == 13) {
-				max = 50;
+		if (live) {
+
+			for (int i = 1; i < 14; i++) {
+				int max = 25;
+				if (i == 13) {
+					max = 50;
+				}
+				for (int j = 0; j < max; j++) {
+					lightIds.add(new LightId(i, j));
+				}
 			}
-			for (int j = 0; j < max; j++) {
-				lightIds.add(new LightId(i, j));
+
+		} else {
+			for (int i = 0; i < 25; i++) {
+				lightIds.add(new LightId(1, i));
 			}
 		}
 		return lightIds;
@@ -122,7 +139,7 @@ public class LightController {
 		List<LightId> lightIds = getLightIds();
 		for (LightId lightId : lightIds) {
 			LightData lightdata = new LightData(lightId.strandNum, lightId.lightNum, 0, 0, 0, 0, 0);
-			this.sendMessage(lightdata);
+			this.sendMessage(new LightCommand(lightdata));
 			try {
 				Thread.sleep(delay);
 			} catch (InterruptedException e) {
@@ -131,24 +148,13 @@ public class LightController {
 		}
 	}
 
-	public String sendMessage(LightCommand command) throws IOException {
+	public String sendMessage(Command command) throws IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		String message = mapper.writeValueAsString(command);
 		return this.sendMessage(message);
 	}
 
-	public String sendMessage(LightDataCommand lightdataCommand) throws IOException {
-		ObjectMapper mapper = new ObjectMapper();
-		String message = mapper.writeValueAsString(lightdataCommand);
-		return this.sendMessage(message);
-	}
-
-	public String sendMessage(LightData lightdata) throws IOException {
-		LightDataCommand ldc = new LightDataCommand(lightdata);
-		return this.sendMessage(ldc);
-	}
-
-	public String sendMessage(String message) throws IOException {
+	private String sendMessage(String message) throws IOException {
 		// Create a datagram socket, send the packet through it, close it.
 		DatagramSocket dsocket = new DatagramSocket();
 		byte[] receiveData = new byte[1024];
@@ -160,7 +166,7 @@ public class LightController {
 		DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 		dsocket.receive(receivePacket);
 		String response = new String(receivePacket.getData());
-		//System.out.println("FROM SERVER: " + response);
+		// System.out.println("FROM SERVER: " + response);
 		dsocket.close();
 		return response;
 	}
@@ -175,7 +181,7 @@ public class LightController {
 			sand.randomizeLightColors();
 			sand.lightsOff();
 
-			sand.lightsOnRandom(10);
+			sand.randomizeLightColors(10, false);
 			sand.lightsOffRandom(10);
 
 			sand.randomizeLightColors();
