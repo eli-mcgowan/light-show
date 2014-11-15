@@ -320,11 +320,11 @@ void loop()
     char* command  = root["command"];
     Serial.print(F("Got command: "));
     Serial.println(command);
-    if (String(F("0")).equalsIgnoreCase(command)) {
+    if (String("0").equalsIgnoreCase(command)) {
       processCommand(root["lightData"]);
-    } else if (String(F("1")).equalsIgnoreCase(command)) {
+    } else if (String("1").equalsIgnoreCase(command)) {
       processArrayOfCommands(root);
-    } else if (String(F("2")).equalsIgnoreCase(command)) {
+    } else if (String("2").equalsIgnoreCase(command)) {
       allOffFade(root["delay"]);
     } else {
       Serial.print(F("Unknown Command: "));
