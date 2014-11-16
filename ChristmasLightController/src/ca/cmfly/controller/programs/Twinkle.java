@@ -9,6 +9,7 @@ import java.util.Random;
 import ca.cmfly.controller.ArduinoColor;
 import ca.cmfly.controller.LightController;
 import ca.cmfly.controller.LightId;
+import ca.cmfly.controller.commands.FillCommand;
 import ca.cmfly.controller.commands.LightCommand;
 import ca.cmfly.controller.commands.LightData;
 
@@ -41,6 +42,7 @@ public class Twinkle extends LightShow {
 			lc.sendMessage(lightCommand);
 
 		}
+		
 		nextTwinkleTimeInMillis = System.currentTimeMillis();
 	}
 	
