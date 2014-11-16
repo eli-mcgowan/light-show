@@ -12,8 +12,9 @@ import ca.cmfly.controller.commands.LightData;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class RedAndWhite {
-	private String host = "192.168.1.61";
-	private int port = 8888;
+	private static final String DEFAULT_HOST = "192.168.1.61";
+	private static final int DEFAULT_PORT = 8888;
+	
 	private LightController lc;
 	private boolean live = true;
 	private boolean random;
@@ -21,12 +22,12 @@ public class RedAndWhite {
 
 	public RedAndWhite() throws IOException {
 		super();
-		lc = new LightController(host, port);
+		lc = new LightController(DEFAULT_HOST, DEFAULT_PORT);
 	}
 
 	public RedAndWhite(boolean random, int fadeDelay) throws IOException {
 		super();
-		lc = new LightController(host, port);
+		lc = new LightController(DEFAULT_HOST, DEFAULT_PORT);
 		this.random = random;
 		this.fadeDelay = fadeDelay;
 	}
@@ -34,8 +35,6 @@ public class RedAndWhite {
 	public RedAndWhite(String host, int port, boolean random, int fadeDelay) throws IOException {
 		super();
 		lc = new LightController(host, port);
-		this.host = host;
-		this.port = port;
 		this.random = random;
 		this.fadeDelay = fadeDelay;
 	}
@@ -74,8 +73,8 @@ public class RedAndWhite {
 	}
 
 	public static void main(String[] args) throws IOException {
-		String host = "192.168.1.63";
-		int port = 8888;
+		String host = DEFAULT_HOST;
+		int port = DEFAULT_PORT;
 		boolean random = true;
 		int fadeDelay = 25;
 		boolean live = false;
