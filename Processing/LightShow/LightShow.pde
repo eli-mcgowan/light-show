@@ -21,6 +21,10 @@ String typing;
 String lastCommand;
 String instructions;
 PFont f;
+long udpAcknowledgementTime;
+boolean udpAcknowledgementRequired;
+int udpAcknowledgementPort;
+String udpAcknowledgementAddress;
 
 void setup(){
  size(1550, 750);
@@ -46,6 +50,8 @@ void setup(){
  lastCommand = "";
  instructions = "Setup: To set the number of strands and their size type 'setup' followed by the length of each strand (invalid entries will be set to 1). Example: setup 12 18 24";
  f = createFont("Arial",16,true); // Arial, 16 point, anti-aliasing on
+ udpAcknowledgementTime = 0;
+ udpAcknowledgementRequired = false;
  
  setMaxBulbs();
  
@@ -66,6 +72,10 @@ void draw(){
     drawLights(lightStrands[i].lights, lightsYOffset + (rowHeight * i));
   }
   
+  if(udpAcknowledgementRequired && millis() > udpAcknowledgementTime){
+    udpAcknowledgementRequired = false;
+    udp.send(UDP_ACK, udpAcknowledgementAddress, udpAcknowledgementPort);
+  }
   
   fill(255);
   text(instructions,10,690);
@@ -73,22 +83,46 @@ void draw(){
   text("Last: " + lastCommand,10,735);
 }
 
-void receive(byte[] data, String HOST_IP, int PORT_RX){
+void receive(byte[] data, String senderAddress, int senderPort){
+  udpAcknowledgementAddress = senderAddress;
+  udpAcknowledgementPort = senderPort;
   lastValue=new String(data);
-  println(lastValue);
+  println("rx: " + lastValue);
   JSONObject json = JSONObject.parse(lastValue);
- // json = loadJSONObject(lastValue);
-  int stringNum = json.getInt("string");
-  int bulbNum = json.getInt("bulb");
-  int bulbColor = json.getInt("color");
+  String command = json.getString("command");
+  
+  if(command.equals("0")){
+     handleLightCommand(json.getJSONObject("lightData")); 
+  } else if(command.equals("2")){
+     handleFadeCommand(json); 
+  } else{
+     println("Unknown command: " + command); 
+  }
+  
+}
+
+void handleLightCommand(JSONObject json){
+  int stringNum = json.getInt("s");
+  int bulbNum = json.getInt("l");
+  int bulbColor = json.getInt("c");
   Light lightColor = getLight(bulbColor);
   //int red = json.getInt("r");
   //int green = json.getInt("g");
   //int blue = json.getInt("b");
-  int brightness = json.getInt("brightness"); // TODO: currently ignored
+  int brightness = json.getInt("b"); // TODO: currently ignored
   println(bulbColor);
-  udp.send(UDP_ACK, HOST_IP, PORT_RX);
   updateLight(stringNum, bulbNum, lightColor);
+  udpAcknowledgementRequired = true;
+  udpAcknowledgementTime = millis() + 10;
+}
+
+void handleFadeCommand(JSONObject json){
+  int delay = json.getInt("delay");
+  int modifiedDelay = delay * 100;
+  println("FADE: " + delay);
+  fillAllLights(14); // Arduino Black 
+  udpAcknowledgementRequired = true;
+  udpAcknowledgementTime = millis() + modifiedDelay; 
 }
 
 void keyPressed() {
@@ -222,6 +256,16 @@ void shiftLights(Light[] lightArray){
     lightArray[i] = lightArray[i+1];
   }
   lightArray[lightArray.length - 1] = first;
+}
+
+void fillAllLights(int arduinoColor){
+  for(int i=0; i<lightStrands.length; i++){
+    for(int j=0; j<lightStrands[i].lights.length; j++){
+      Light lightColor = getLight(arduinoColor);
+      lightStrands[i].lights[j] = lightColor;
+    }
+  }
+  
 }
 
 class LightStrand{

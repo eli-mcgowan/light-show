@@ -53,7 +53,7 @@ public class RedAndWhite {
 
 				LightData lightData = new LightData(lightId.strandNum, lightId.lightNum, colour, 0, 0, 0, LightController.MAX_INTENSITY);
 				lightCommand.setLightData(lightData);
-
+//
 //				ObjectMapper mapper = new ObjectMapper();
 //				String message = mapper.writeValueAsString(lightCommand);
 //				System.out.println(message);
