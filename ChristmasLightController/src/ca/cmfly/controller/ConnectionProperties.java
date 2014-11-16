@@ -1,9 +1,12 @@
 package ca.cmfly.controller;
 
-public class ConnectionConstants {
+/**
+ * Replace with properties file.
+ *
+ */
+public class ConnectionProperties {
 
-
-	private static final String ENV = ConnectionConstants.ENV_CHRIS_TEST;
+	private static final String ENV = ConnectionProperties.ENV_CHRIS_TEST;
 	
 	private static final String ENV_CHRIS_LIVE = "ENV_CHRIS_LIVE";
 	private static final String ENV_CHRIS_TEST = "ENV_CHRIS_TEST";
@@ -34,6 +37,17 @@ public class ConnectionConstants {
 			return CHRIS_PORT;
 		} else if(ENV.equals(ENV_ELI)){
 			return ELI_PORT;
+		}
+		throw new RuntimeException("Unknown Environment: " + ENV);
+	}
+	
+	public static boolean isLive(){
+		if(ENV.equals(ENV_CHRIS_LIVE)){
+			return true;
+		} else if(ENV.equals(ENV_CHRIS_TEST)){
+			return false;
+		} else if(ENV.equals(ENV_ELI)){
+			return true;
 		}
 		throw new RuntimeException("Unknown Environment: " + ENV);
 	}

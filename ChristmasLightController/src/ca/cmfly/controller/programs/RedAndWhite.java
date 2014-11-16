@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-import ca.cmfly.controller.ConnectionConstants;
 import ca.cmfly.controller.LightController;
 import ca.cmfly.controller.LightId;
 import ca.cmfly.controller.commands.LightCommand;
@@ -12,7 +11,6 @@ import ca.cmfly.controller.commands.LightData;
 
 public class RedAndWhite {
 	private LightController lc;
-	private boolean live = true;
 	private boolean random;
 	private int fadeDelay;
 
@@ -35,12 +33,8 @@ public class RedAndWhite {
 		this.fadeDelay = fadeDelay;
 	}
 
-	public void setLive(boolean live) {
-		this.live = live;
-	}
-
 	public void doit() throws IOException {
-		List<LightId> lightIds = LightController.getLightIds(live);
+		List<LightId> lightIds = LightController.getLightIds();
 		if (random) {
 			Collections.shuffle(lightIds);
 		}
@@ -69,22 +63,15 @@ public class RedAndWhite {
 	}
 
 	public static void main(String[] args) throws IOException {
-		String host = ConnectionConstants.getHost();
-		int port = ConnectionConstants.getPort();
 		boolean random = true;
 		int fadeDelay = 25;
-		boolean live = true;
 
 		if (args.length > 0) {
-			host = args[0];
-			port = Integer.parseInt(args[1]);
-			random = Boolean.getBoolean(args[2]);
-			fadeDelay = Integer.parseInt(args[3]);
-			live = Boolean.getBoolean(args[4]);
+			random = Boolean.getBoolean(args[0]);
+			fadeDelay = Integer.parseInt(args[1]);
 		}
 
-		RedAndWhite raw = new RedAndWhite(host, port, random, fadeDelay);
-		raw.setLive(live);
+		RedAndWhite raw = new RedAndWhite(random, fadeDelay);
 		raw.doit();
 
 	}

@@ -25,7 +25,7 @@ public class LightController {
 	private int port;
 
 	public LightController() throws UnknownHostException {
-		this(ConnectionConstants.getHost(), ConnectionConstants.getPort());
+		this(ConnectionProperties.getHost(), ConnectionProperties.getPort());
 	}
 	
 	public LightController(String host, int port) throws UnknownHostException {
@@ -113,12 +113,8 @@ public class LightController {
 	}
 
 	public static List<LightId> getLightIds() {
-		return getLightIds(true);
-	}
-
-	public static List<LightId> getLightIds(boolean live) {
 		List<LightId> lightIds = new ArrayList<LightId>();
-		if (live) {
+		if (ConnectionProperties.isLive()) {
 
 			for (int i = 1; i < 14; i++) {
 				int max = 25;
