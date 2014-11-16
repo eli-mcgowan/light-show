@@ -24,6 +24,10 @@ public class LightController {
 	private InetAddress address;
 	private int port;
 
+	public LightController() throws UnknownHostException {
+		this(ConnectionConstants.getHost(), ConnectionConstants.getPort());
+	}
+	
 	public LightController(String host, int port) throws UnknownHostException {
 		super();
 		this.port = port;
@@ -173,10 +177,7 @@ public class LightController {
 
 	public static void main(String args[]) {
 		try {
-			String host = "192.168.1.61";
-			int port = 8888;
-
-			LightController sand = new LightController(host, port);
+			LightController sand = new LightController();
 
 			sand.randomizeLightColors();
 			sand.lightsOff();

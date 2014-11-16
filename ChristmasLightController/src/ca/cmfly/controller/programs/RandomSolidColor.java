@@ -10,25 +10,25 @@ import ca.cmfly.controller.LightId;
 import ca.cmfly.controller.commands.LightCommand;
 import ca.cmfly.controller.commands.LightData;
 
-public class RedAndWhite {
+public class RandomSolidColor {
 	private LightController lc;
 	private boolean live = true;
 	private boolean random;
 	private int fadeDelay;
 
-	public RedAndWhite() throws IOException {
+	public RandomSolidColor() throws IOException {
 		super();
 		lc = new LightController();
 	}
 
-	public RedAndWhite(boolean random, int fadeDelay) throws IOException {
+	public RandomSolidColor(boolean random, int fadeDelay) throws IOException {
 		super();
 		lc = new LightController();
 		this.random = random;
 		this.fadeDelay = fadeDelay;
 	}
 
-	public RedAndWhite(String host, int port, boolean random, int fadeDelay) throws IOException {
+	public RandomSolidColor(String host, int port, boolean random, int fadeDelay) throws IOException {
 		super();
 		lc = new LightController(host, port);
 		this.random = random;
@@ -44,27 +44,38 @@ public class RedAndWhite {
 		if (random) {
 			Collections.shuffle(lightIds);
 		}
-		while (true) {
-			lc.lightsOffFade(fadeDelay);
 
-			int colour = 11;
+		while (true) {
+			for (int color = 1; color <= 13; color++) {
+				lc.lightsOffFade(fadeDelay);
+
+				for (LightId lightId : lightIds) {
+					LightCommand lightCommand = new LightCommand();
+
+					LightData lightData = new LightData(lightId.strandNum, lightId.lightNum, color, 0, 0, 0, LightController.MAX_INTENSITY);
+					lightCommand.setLightData(lightData);
+
+					lc.sendMessage(lightCommand);
+
+				}
+			}
+			lc.lightsOffFade(fadeDelay);
+			int color = 1;
 			for (LightId lightId : lightIds) {
 				LightCommand lightCommand = new LightCommand();
 
-				LightData lightData = new LightData(lightId.strandNum, lightId.lightNum, colour, 0, 0, 0, LightController.MAX_INTENSITY);
+				LightData lightData = new LightData(lightId.strandNum, lightId.lightNum, color, 0, 0, 0, LightController.MAX_INTENSITY);
 				lightCommand.setLightData(lightData);
 
-//				ObjectMapper mapper = new ObjectMapper();
-//				String message = mapper.writeValueAsString(lightCommand);
-//				System.out.println(message);
-
 				lc.sendMessage(lightCommand);
-				if (colour == 11) {
-					colour = 2;
+				if (color == 13) {
+					color = 1;
 				} else {
-					colour = 11;
+					color++;
 				}
+
 			}
+			
 		}
 	}
 
@@ -83,7 +94,7 @@ public class RedAndWhite {
 			live = Boolean.getBoolean(args[4]);
 		}
 
-		RedAndWhite raw = new RedAndWhite(host, port, random, fadeDelay);
+		RandomSolidColor raw = new RandomSolidColor(host, port, random, fadeDelay);
 		raw.setLive(live);
 		raw.doit();
 
