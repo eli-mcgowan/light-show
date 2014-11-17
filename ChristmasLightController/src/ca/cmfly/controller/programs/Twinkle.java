@@ -1,7 +1,6 @@
 package ca.cmfly.controller.programs;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -9,7 +8,6 @@ import java.util.Random;
 import ca.cmfly.controller.ArduinoColor;
 import ca.cmfly.controller.LightController;
 import ca.cmfly.controller.LightId;
-import ca.cmfly.controller.commands.FillCommand;
 import ca.cmfly.controller.commands.LightCommand;
 import ca.cmfly.controller.commands.LightData;
 
@@ -25,7 +23,7 @@ public class Twinkle extends LightShow {
 	private long nextTwinkleTimeInMillis;
 	private List<LightTwinkle> lightTwinkles;
 
-	public Twinkle() throws UnknownHostException {
+	public Twinkle() throws IOException {
 		super();
 		lightTwinkles = new ArrayList<LightTwinkle>();
 		maxTimeBetweenTwinkles = 250;
@@ -36,7 +34,7 @@ public class Twinkle extends LightShow {
 		for (LightId lightId : lightIds) {
 			LightCommand lightCommand = new LightCommand();
 
-			LightData lightData = new LightData(lightId.strandNum, lightId.lightNum, ArduinoColor.COLOR_WARMWHITE, 0, 0, 0, LightController.MAX_INTENSITY);
+			LightData lightData = new LightData(lightId.strandNum, lightId.lightNum, ArduinoColor.COLOR_BLUE, 0, 0, 0, LightController.MAX_INTENSITY);
 			lightCommand.setLightData(lightData);
 
 			lc.sendMessage(lightCommand);
@@ -72,7 +70,7 @@ public class Twinkle extends LightShow {
 				// return to normal
 				LightId lightId = lightTwinkle.lightId;
 				LightCommand lightCommand2 = new LightCommand();
-				LightData lightData2 = new LightData(lightId.strandNum, lightId.lightNum, ArduinoColor.COLOR_WARMWHITE, 0, 0, 0, LightController.MAX_INTENSITY);
+				LightData lightData2 = new LightData(lightId.strandNum, lightId.lightNum, ArduinoColor.COLOR_BLUE, 0, 0, 0, LightController.MAX_INTENSITY);
 				lightCommand2.setLightData(lightData2);
 				lc.sendMessage(lightCommand2);
 				completedLightTwinkles.add(lightTwinkle);

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -12,8 +11,8 @@ import java.util.Random;
 
 import ca.cmfly.controller.commands.Command;
 import ca.cmfly.controller.commands.FadeCommand;
-import ca.cmfly.controller.commands.LightData;
 import ca.cmfly.controller.commands.LightCommand;
+import ca.cmfly.controller.commands.LightData;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,15 +23,30 @@ public class LightController {
 	private InetAddress address;
 	private int port;
 
-	public LightController() throws UnknownHostException {
+	public LightController() throws IOException {
 		this(ConnectionProperties.getHost(), ConnectionProperties.getPort());
 	}
-	
-	public LightController(String host, int port) throws UnknownHostException {
+
+	public LightController(String host, int port) throws IOException {
 		super();
 		this.port = port;
 		// Get the internet address of the specified host
 		this.address = InetAddress.getByName(host);
+
+		setAddresses();
+	}
+
+	/**
+	 * We send an off command to each bulb to make sure they are addressed as the lights may turn on after the arduino setup method.
+	 * 
+	 * @throws IOException
+	 */
+	private void setAddresses() throws IOException {
+		List<LightId> lightIds = getLightIds();
+		for (LightId lightId : lightIds) {
+			LightData lightdata = new LightData(lightId.strandNum, lightId.lightNum, ArduinoColor.COLOR_RED, 0, 0, 0, MAX_INTENSITY);
+			this.sendMessage(new LightCommand(lightdata));
+		}
 	}
 
 	/**
@@ -64,7 +78,9 @@ public class LightController {
 	public void randomizeLightColors(long delay, boolean shuffle) throws IOException {
 
 		List<LightId> lightIds = getLightIds();
-		Collections.shuffle(lightIds);
+		if (shuffle) {
+			Collections.shuffle(lightIds);
+		}
 
 		for (LightId lightId : lightIds) {
 			LightData lightdata = new LightData(lightId.strandNum, lightId.lightNum, randInt(1, 13), 0, 0, 0, randInt(1, MAX_INTENSITY));

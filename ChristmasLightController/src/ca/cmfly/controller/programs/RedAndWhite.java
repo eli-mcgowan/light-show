@@ -2,7 +2,6 @@ package ca.cmfly.controller.programs;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.List;
 
 import ca.cmfly.controller.LightController;
 import ca.cmfly.controller.LightId;

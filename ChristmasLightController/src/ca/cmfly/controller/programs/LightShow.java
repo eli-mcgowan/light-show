@@ -1,7 +1,6 @@
 package ca.cmfly.controller.programs;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.List;
 
 import ca.cmfly.controller.LightController;
@@ -12,7 +11,7 @@ public abstract class LightShow {
 	protected boolean keepGoing;
 	protected List<LightId> lightIds;
 	
-	public LightShow() throws UnknownHostException{
+	public LightShow() throws IOException{
 		this.lc = new LightController();
 		this.keepGoing = true;
 		this.lightIds = LightController.getLightIds();
