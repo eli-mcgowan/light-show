@@ -32,8 +32,6 @@ public class LightController {
 		this.port = port;
 		// Get the internet address of the specified host
 		this.address = InetAddress.getByName(host);
-
-		setAddresses();
 	}
 
 	/**
@@ -41,7 +39,7 @@ public class LightController {
 	 * 
 	 * @throws IOException
 	 */
-	private void setAddresses() throws IOException {
+	public void setAddresses() throws IOException {
 		List<LightId> lightIds = getLightIds();
 		for (LightId lightId : lightIds) {
 			LightData lightdata = new LightData(lightId.strandNum, lightId.lightNum, ArduinoColor.COLOR_RED, 0, 0, 0, MAX_INTENSITY);
