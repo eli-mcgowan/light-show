@@ -1,79 +1,87 @@
 package ca.cmfly.controller.commands;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class LightData {
-	int s;
-	int l;
-	int c;
-	int r;
-	int g;
-	int b;
-	int i; // MAX_INTENSITY = 0xcc -> 204
+	int string;
+	int light;
+	int color;
+	int red;
+	int green;
+	int blue;
+	int intensity; // MAX_INTENSITY = 0xcc -> 204
 
 	public LightData(int s, int l, int c, int r, int g, int b, int i) {
 		super();
-		this.s = s;
-		this.l = l;
-		this.c = c;
-		this.r = r;
-		this.g = g;
-		this.b = b;
-		this.i = i;
+		this.string = s;
+		this.light = l;
+		this.color = c;
+		this.red = r;
+		this.green = g;
+		this.blue = b;
+		this.intensity = i;
 	}
 
-	public int getS() {
-		return s;
+	@JsonProperty("s")
+	public int getString() {
+		return string;
 	}
 
-	public void setS(int s) {
-		this.s = s;
+	public void setString(int string) {
+		this.string = string;
 	}
 
-	public int getL() {
-		return l;
+	@JsonProperty("l")
+	public int getLight() {
+		return light;
 	}
 
-	public void setL(int l) {
-		this.l = l;
+	public void setLight(int light) {
+		this.light = light;
 	}
 
-	public int getC() {
-		return c;
+	@JsonProperty("c")
+	public int getColor() {
+		return color;
 	}
 
-	public void setC(int c) {
-		this.c = c;
+	public void setColor(int color) {
+		this.color = color;
 	}
 
-	public int getR() {
-		return r;
+	@JsonProperty("r")
+	public int getRed() {
+		return red;
 	}
 
-	public void setR(int r) {
-		this.r = r;
+	public void setRed(int red) {
+		this.red = red;
 	}
 
-	public int getG() {
-		return g;
+	@JsonProperty("g")
+	public int getGreen() {
+		return green;
 	}
 
-	public void setG(int g) {
-		this.g = g;
+	public void setGreen(int green) {
+		this.green = green;
 	}
 
-	public int getB() {
-		return b;
+	@JsonProperty("b")
+	public int getBlue() {
+		return blue;
 	}
 
-	public void setB(int b) {
-		this.b = b;
+	public void setBlue(int blue) {
+		this.blue = blue;
 	}
 
-	public int getI() {
-		return i;
+	@JsonProperty("i")
+	public int getIntensity() {
+		return intensity;
 	}
 
-	public void setI(int i) {
-		this.i = i;
+	public void setIntensity(int intensity) {
+		this.intensity = intensity;
 	}
-
 }
