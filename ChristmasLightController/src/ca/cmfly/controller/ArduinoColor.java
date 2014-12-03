@@ -16,4 +16,7 @@ public class ArduinoColor {
 	public static final int COLOR_INDIGO = 12;
 	public static final int COLOR_VIOLET = 13;
 	public static final int COLOR_BLACK = 14;
+
+	public static final int[] COLORS = {COLOR_WHITE, COLOR_RED, COLOR_GREEN, COLOR_BLUE, COLOR_CYAN, COLOR_MAGENTA, COLOR_YELLOW, COLOR_PURPLE, COLOR_ORANGE, COLOR_PALE_ORANGE,
+		COLOR_WARMWHITE, COLOR_INDIGO, COLOR_VIOLET, COLOR_BLACK};
 }

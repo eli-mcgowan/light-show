@@ -9,23 +9,17 @@ import java.util.List;
  * @author CMfly
  *
  */
-public class LightCommandGroup extends Command{
+public class LightCommandGroup extends Command {
 
 	List<LightData> lightData;
-	
-	public LightCommandGroup() {
-		super("1");
-		lightData = new ArrayList<>();
-	}
 
 	public LightCommandGroup(List<LightData> lightData) {
-		super();
+		super(1);
 		this.lightData = lightData;
 	}
 
-	public LightCommandGroup(LightData lightdata) {
-		this.lightData = new ArrayList<>();
-		this.lightData.add(lightdata);
+	public LightCommandGroup() {
+		this(new ArrayList<LightData>());
 	}
 
 	public List<LightData> getLightData() {
@@ -42,4 +36,56 @@ public class LightCommandGroup extends Command{
 		}
 		this.lightData.add(lightData);
 	}
+
+	@Override
+	public List<byte[]> getMessage(int maxSize) {
+		// I'm sorry
+		final int HEADER_SIZE = 2;
+		final int LIGHT_DATA_SIZE = 7;
+		final int MAX_NUM_ELEMENTS = 200;
+		List<byte[]> messageList = new ArrayList<>();
+		
+		
+		int currentNumLightDatas = 0;
+		List<Byte> lightDataBytes = new ArrayList<>();
+		for (LightData lightDatum : lightData) {
+			currentNumLightDatas++;
+			lightDataBytes.add(lightDatum.getString());
+			lightDataBytes.add(lightDatum.getLight());
+			lightDataBytes.add(lightDatum.getColor());
+			lightDataBytes.add(lightDatum.getRed());
+			lightDataBytes.add(lightDatum.getGreen());
+			lightDataBytes.add(lightDatum.getBlue());
+			lightDataBytes.add(lightDatum.getIntensity());
+			if(currentNumLightDatas >= MAX_NUM_ELEMENTS){
+				byte[] message = new byte[HEADER_SIZE + LIGHT_DATA_SIZE * MAX_NUM_ELEMENTS];
+				message[0] = getCommand();
+				message[1] = (byte) MAX_NUM_ELEMENTS;
+				int thisIsHacky = 2;
+				for(Byte lightDataByte: lightDataBytes){
+					message[thisIsHacky++] = lightDataByte;
+				}
+				messageList.add(message);
+				
+				currentNumLightDatas = 0;
+				lightDataBytes = new ArrayList<>();
+			}
+		}
+
+		if(currentNumLightDatas > 0){
+			byte[] message = new byte[HEADER_SIZE + LIGHT_DATA_SIZE * currentNumLightDatas];
+			message[0] = getCommand();
+			message[1] = (byte) currentNumLightDatas;
+			int thisIsHacky = 2;
+			for(Byte lightDataByte: lightDataBytes){
+				message[thisIsHacky++] = lightDataByte;
+			}
+			messageList.add(message);
+		}
+		
+		return messageList;
+	}
+	
+	
+	
 }

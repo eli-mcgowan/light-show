@@ -1,10 +1,10 @@
 package ca.cmfly.controller;
 
 public class LightId {
-	public int strandNum;
-	public int lightNum;
+	public byte strandNum;
+	public byte lightNum;
 
-	public LightId(int strandNum, int lightNum) {
+	public LightId(byte strandNum, byte lightNum) {
 		this.strandNum = strandNum;
 		this.lightNum = lightNum;
 	}

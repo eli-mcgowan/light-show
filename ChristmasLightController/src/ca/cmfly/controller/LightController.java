@@ -15,11 +15,11 @@ import ca.cmfly.controller.commands.LightCommand;
 import ca.cmfly.controller.commands.LightData;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class LightController {
 
-	public static int MAX_INTENSITY = 0xcc;
+	public static byte MAX_INTENSITY = (byte) 0xcc;
+	private final int UDP_TX_PACKET_MAX_SIZE =1500;
 	private InetAddress address;
 	private int port;
 
@@ -42,7 +42,7 @@ public class LightController {
 	public void setAddresses() throws IOException {
 		List<LightId> lightIds = getLightIds();
 		for (LightId lightId : lightIds) {
-			LightData lightdata = new LightData(lightId.strandNum, lightId.lightNum, ArduinoColor.COLOR_RED, 0, 0, 0, MAX_INTENSITY);
+			LightData lightdata = new LightData(lightId.strandNum, lightId.lightNum, (byte)ArduinoColor.COLOR_RED, (byte)0, (byte)0, (byte)0, MAX_INTENSITY);
 			this.sendMessage(new LightCommand(lightdata));
 		}
 	}
@@ -130,19 +130,19 @@ public class LightController {
 		List<LightId> lightIds = new ArrayList<LightId>();
 		if (ConnectionProperties.isLive()) {
 
-			for (int i = 1; i < 14; i++) {
-				int max = 25;
+			for (byte i = 1; i < 14; i++) {
+				byte max = 25;
 				if (i == 13) {
 					max = 50;
 				}
-				for (int j = 0; j < max; j++) {
+				for (byte j = 0; j < max; j++) {
 					lightIds.add(new LightId(i, j));
 				}
 			}
 
 		} else {
-			for (int i = 0; i < 25; i++) {
-				lightIds.add(new LightId(1, i));
+			for (byte i = 0; i < 25; i++) {
+				lightIds.add(new LightId((byte)1, i));
 			}
 		}
 		return lightIds;
@@ -162,18 +162,37 @@ public class LightController {
 		}
 	}
 
-	public String sendMessage(Command command) throws IOException {
-		ObjectMapper mapper = new ObjectMapper();
-		String message = mapper.writeValueAsString(command);
-		return this.sendMessage(message);
+	public void sendMessage(Command command) throws IOException {
+//		ObjectMapper mapper = new ObjectMapper();
+//		String message = mapper.writeValueAsString(command);
+		for(byte[] message: command.getMessage(UDP_TX_PACKET_MAX_SIZE)){
+			this.sendMessage(message);
+		}
 	}
 
-	private String sendMessage(String message) throws IOException {
+//	private String sendMessage(String message) throws IOException {
+//		// Create a datagram socket, send the packet through it, close it.
+//		DatagramSocket dsocket = new DatagramSocket();
+//		byte[] receiveData = new byte[1024];
+//		// Initialize a datagram packet with data and address and send
+//		DatagramPacket packet = new DatagramPacket(message.getBytes(), message.length(), this.address, this.port);
+//		dsocket.send(packet);
+//
+//		// Receive reply
+//		DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+//		dsocket.receive(receivePacket);
+//		String response = new String(receivePacket.getData());
+//		// System.out.println("FROM SERVER: " + response);
+//		dsocket.close();
+//		return response;
+//	}
+
+	public String sendMessage(byte[] message) throws IOException {
 		// Create a datagram socket, send the packet through it, close it.
 		DatagramSocket dsocket = new DatagramSocket();
 		byte[] receiveData = new byte[1024];
 		// Initialize a datagram packet with data and address and send
-		DatagramPacket packet = new DatagramPacket(message.getBytes(), message.length(), this.address, this.port);
+		DatagramPacket packet = new DatagramPacket(message, message.length, this.address, this.port);
 		dsocket.send(packet);
 
 		// Receive reply
@@ -189,14 +208,29 @@ public class LightController {
 		try {
 			LightController sand = new LightController();
 
-			sand.randomizeLightColors();
-			sand.lightsOff();
-
-			sand.randomizeLightColors(10, false);
-			sand.lightsOffRandom(10);
-
-			sand.randomizeLightColors();
-			sand.lightsOffWithDelay(10);
+//			sand.randomizeLightColors();
+//			sand.lightsOff();
+//
+//			sand.randomizeLightColors(10, false);
+//			sand.lightsOffRandom(10);
+//
+//			sand.randomizeLightColors();
+//			sand.lightsOffWithDelay(10);
+			
+			// command, #commands, string, bulb, color, r, g, b, intensity
+			byte[] message = {1,10,
+					13,0,3,0,0,0,(byte) MAX_INTENSITY,
+					13,1,3,0,0,0,(byte) MAX_INTENSITY,
+					13,2,3,0,0,0,(byte) MAX_INTENSITY,
+					13,3,3,0,0,0,(byte) MAX_INTENSITY,
+					13,4,3,0,0,0,(byte) MAX_INTENSITY,
+					13,5,3,0,0,0,(byte) MAX_INTENSITY,
+					13,6,3,0,0,0,(byte) MAX_INTENSITY,
+					13,7,3,0,0,0,(byte) MAX_INTENSITY,
+					13,8,3,0,0,0,(byte) MAX_INTENSITY,
+					13,9,3,0,0,0,(byte) MAX_INTENSITY};
+			
+			sand.sendMessage(message);
 
 		} catch (Exception e) {
 			System.err.println(e);

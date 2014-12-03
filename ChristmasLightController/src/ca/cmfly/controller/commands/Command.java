@@ -1,24 +1,32 @@
 package ca.cmfly.controller.commands;
 
-public class Command {
-	private String command;
+import java.util.List;
 
-	public Command(String command) {
+public abstract class Command {
+	private byte command;
+
+	public Command(byte command) {
 		super();
 		this.command = command;
 	}
-
-	public Command() {
+	
+	public Command(int command) {
 		super();
-		// TODO Auto-generated constructor stub
+		this.command = (byte) command;
 	}
 
-	public String getCommand() {
+	public byte getCommand() {
 		return command;
 	}
 
-	public void setCommand(String command) {
+	public void setCommand(byte command) {
 		this.command = command;
 	}
 
+	/**
+	 * 
+	 * @param maxSize	The maximum number of bytes allowed in a single byte[]
+	 * @return
+	 */
+	public abstract List<byte[]> getMessage(int maxSize);
 }

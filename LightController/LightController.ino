@@ -1,7 +1,7 @@
 #include <SPI.h>         // needed for Arduino versions later than 0018
 #include <Ethernet.h>
 #include <EthernetUdp.h>
-#define UDP_TX_PACKET_MAX_SIZE 1024 // Current light command is 8
+#define UDP_TX_PACKET_MAX_SIZE 1500 // Current light command is 8
 #include <G35String.h>
 
 

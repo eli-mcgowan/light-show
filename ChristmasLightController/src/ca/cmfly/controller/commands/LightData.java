@@ -1,17 +1,16 @@
 package ca.cmfly.controller.commands;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class LightData {
-	int string;
-	int light;
-	int color;
-	int red;
-	int green;
-	int blue;
-	int intensity; // MAX_INTENSITY = 0xcc -> 204
+	byte string;
+	byte light;
+	byte color;
+	byte red;
+	byte green;
+	byte blue;
+	byte intensity; // MAX_byteENSITY = 0xcc -> 204
 
-	public LightData(int s, int l, int c, int r, int g, int b, int i) {
+	public LightData(byte s, byte l, byte c, byte r, byte g, byte b, byte i) {
 		super();
 		this.string = s;
 		this.light = l;
@@ -21,67 +20,72 @@ public class LightData {
 		this.blue = b;
 		this.intensity = i;
 	}
+	
+	public LightData(byte s, byte l, int c, int r, int g, int b, int i) {
+		super();
+		this.string = s;
+		this.light = l;
+		this.color = (byte) c;
+		this.red = (byte) r;
+		this.green = (byte) g;
+		this.blue = (byte) b;
+		this.intensity = (byte) i;
+	}
 
-	@JsonProperty("s")
-	public int getString() {
+	public byte getString() {
 		return string;
 	}
 
-	public void setString(int string) {
+	public void setString(byte string) {
 		this.string = string;
 	}
 
-	@JsonProperty("l")
-	public int getLight() {
+	public byte getLight() {
 		return light;
 	}
 
-	public void setLight(int light) {
+	public void setLight(byte light) {
 		this.light = light;
 	}
 
-	@JsonProperty("c")
-	public int getColor() {
+	public byte getColor() {
 		return color;
 	}
 
-	public void setColor(int color) {
+	public void setColor(byte color) {
 		this.color = color;
 	}
 
-	@JsonProperty("r")
-	public int getRed() {
+	public byte getRed() {
 		return red;
 	}
 
-	public void setRed(int red) {
+	public void setRed(byte red) {
 		this.red = red;
 	}
 
-	@JsonProperty("g")
-	public int getGreen() {
+	public byte getGreen() {
 		return green;
 	}
 
-	public void setGreen(int green) {
+	public void setGreen(byte green) {
 		this.green = green;
 	}
 
-	@JsonProperty("b")
-	public int getBlue() {
+	public byte getBlue() {
 		return blue;
 	}
 
-	public void setBlue(int blue) {
+	public void setBlue(byte blue) {
 		this.blue = blue;
 	}
 
-	@JsonProperty("i")
-	public int getIntensity() {
+	public byte getIntensity() {
 		return intensity;
 	}
 
-	public void setIntensity(int intensity) {
+	public void setIntensity(byte intensity) {
 		this.intensity = intensity;
 	}
+
 }

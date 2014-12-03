@@ -1,18 +1,17 @@
 package ca.cmfly.controller.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class LightCommand extends Command {
 	LightData lightData;
 
 	public LightCommand() {
-		super("0");
-	}
-	
-	public LightCommand(String command) {
-		super(command);
+		super((byte) 0);
 	}
 
 	public LightCommand(LightData lightData) {
-		super("0");
+		this();
 		this.lightData = lightData;
 	}
 
@@ -24,4 +23,20 @@ public class LightCommand extends Command {
 		this.lightData = lightData;
 	}
 
+	@Override
+	public List<byte[]> getMessage(int maxSize) {
+		List<byte[]> messageList = new ArrayList<>();
+		byte[] message = {getCommand(),1,
+				lightData.getString(),
+				lightData.getLight(),
+				lightData.getColor(),
+				lightData.getRed(),
+				lightData.getGreen(),
+				lightData.getBlue(),
+				lightData.getIntensity()};
+		messageList.add(message);
+		return messageList;
+	}
+
+	
 }
