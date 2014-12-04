@@ -5,6 +5,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -218,19 +219,144 @@ public class LightController {
 //			sand.lightsOffWithDelay(10);
 			
 			// command, #commands, string, bulb, color, r, g, b, intensity
-			byte[] message = {1,10,
-					13,0,3,0,0,0,(byte) MAX_INTENSITY,
-					13,1,3,0,0,0,(byte) MAX_INTENSITY,
-					13,2,3,0,0,0,(byte) MAX_INTENSITY,
-					13,3,3,0,0,0,(byte) MAX_INTENSITY,
-					13,4,3,0,0,0,(byte) MAX_INTENSITY,
-					13,5,3,0,0,0,(byte) MAX_INTENSITY,
-					13,6,3,0,0,0,(byte) MAX_INTENSITY,
-					13,7,3,0,0,0,(byte) MAX_INTENSITY,
-					13,8,3,0,0,0,(byte) MAX_INTENSITY,
-					13,9,3,0,0,0,(byte) MAX_INTENSITY};
-			
-			sand.sendMessage(message);
+			{
+				long start = Calendar.getInstance().getTimeInMillis();
+				// command, #commands, string, bulb, color, r, g, b, intensity
+				byte[] message = {1,25,
+						13,0,3,0,0,0,(byte) MAX_INTENSITY,
+						13,1,3,0,0,0,(byte) MAX_INTENSITY,
+						13,2,3,0,0,0,(byte) MAX_INTENSITY,
+						13,3,3,0,0,0,(byte) MAX_INTENSITY,
+						13,4,3,0,0,0,(byte) MAX_INTENSITY,
+						13,5,3,0,0,0,(byte) MAX_INTENSITY,
+						13,6,3,0,0,0,(byte) MAX_INTENSITY,
+						13,7,3,0,0,0,(byte) MAX_INTENSITY,
+						13,8,3,0,0,0,(byte) MAX_INTENSITY,
+						13,9,3,0,0,0,(byte) MAX_INTENSITY,
+						13,10,3,0,0,0,(byte) MAX_INTENSITY,
+						13,11,3,0,0,0,(byte) MAX_INTENSITY,
+						13,12,3,0,0,0,(byte) MAX_INTENSITY,
+						13,13,3,0,0,0,(byte) MAX_INTENSITY,
+						13,14,3,0,0,0,(byte) MAX_INTENSITY,
+						13,15,3,0,0,0,(byte) MAX_INTENSITY,
+						13,16,3,0,0,0,(byte) MAX_INTENSITY,
+						13,17,3,0,0,0,(byte) MAX_INTENSITY,
+						13,18,3,0,0,0,(byte) MAX_INTENSITY,
+						13,19,3,0,0,0,(byte) MAX_INTENSITY,
+						13,20,3,0,0,0,(byte) MAX_INTENSITY,
+						13,21,3,0,0,0,(byte) MAX_INTENSITY,
+						13,22,3,0,0,0,(byte) MAX_INTENSITY,
+						13,23,3,0,0,0,(byte) MAX_INTENSITY,
+						13,24,3,0,0,0,(byte) MAX_INTENSITY};
+				
+				System.out.println(sand.sendMessage(message));
+
+				
+				System.out.println("25 Light: " + (Calendar.getInstance().getTimeInMillis() - start) + "ms");
+			}
+				
+				
+				{
+				long start = Calendar.getInstance().getTimeInMillis();
+				for(int colour : ArduinoColor.COLORS){
+				// command, #commands, string, bulb, color, r, g, b, intensity
+				byte[] message = {1,25,
+						13,0,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,1,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,2,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,3,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,4,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,5,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,6,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,7,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,8,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,9,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,10,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,11,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,12,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,13,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,14,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,15,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,16,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,17,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,18,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,19,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,20,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,21,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,22,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,23,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,24,(byte) colour,0,0,0,(byte) MAX_INTENSITY};
+				
+				System.out.println(sand.sendMessage(message));
+				}
+
+				
+				System.out.println("14 x 25 Light: " + (Calendar.getInstance().getTimeInMillis() - start) + "ms");
+				}
+				
+				{
+				long start = Calendar.getInstance().getTimeInMillis();
+				for(int colour : ArduinoColor.COLORS){
+				// command, #commands, string, bulb, color, r, g, b, intensity
+				byte[] message2 = {1,50,
+						13,0,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,1,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,2,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,3,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,4,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,5,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,6,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,7,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,8,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,9,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,10,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,11,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,12,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,13,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,14,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,15,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,16,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,17,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,18,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,19,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,20,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,21,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,22,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,23,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,24,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,25,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,26,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,27,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,28,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,29,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,30,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,31,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,32,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,33,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,34,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,35,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,36,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,37,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,38,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,39,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,40,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,41,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,42,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,43,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,44,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,45,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,46,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,47,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,48,(byte) colour,0,0,0,(byte) MAX_INTENSITY,
+						13,49,(byte) colour,0,0,0,(byte) MAX_INTENSITY
+						};
+				
+				System.out.println(sand.sendMessage(message2));
+				}
+
+				
+				System.out.println("14 x 50 Light: " + (Calendar.getInstance().getTimeInMillis() - start) + "ms");
+				}
 
 		} catch (Exception e) {
 			System.err.println(e);

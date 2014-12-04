@@ -26,20 +26,20 @@ public class RandomSolidColor extends LightShow {
 		if (random) {
 			Collections.shuffle(lightIds);
 		}
-		for (int color = 1; color <= 13; color++) {
-			lc.lightsOffFade(fadeDelay);
-
-			for (LightId lightId : lightIds) {
-				LightCommand lightCommand = new LightCommand();
-
-				LightData lightData = new LightData(lightId.strandNum, lightId.lightNum, color, 0, 0, 0, LightController.MAX_INTENSITY);
-				lightCommand.setLightData(lightData);
-
-				lc.sendMessage(lightCommand);
-
-			}
-		}
-		lc.lightsOffFade(fadeDelay);
+//		for (int color = 1; color <= 13; color++) {
+//			lc.lightsOffFade(fadeDelay);
+//
+//			for (LightId lightId : lightIds) {
+//				LightCommand lightCommand = new LightCommand();
+//
+//				LightData lightData = new LightData(lightId.strandNum, lightId.lightNum, color, 0, 0, 0, LightController.MAX_INTENSITY);
+//				lightCommand.setLightData(lightData);
+//
+//				lc.sendMessage(lightCommand);
+//
+//			}
+//		}
+		//lc.lightsOffFade(fadeDelay);
 		int color = 1;
 		for (LightId lightId : lightIds) {
 			LightCommand lightCommand = new LightCommand();
@@ -53,8 +53,29 @@ public class RandomSolidColor extends LightShow {
 			} else {
 				color++;
 			}
+			if(color == 8 || color == 10) {
+				color++;
+			}
 
 		}
+		
+//		if (random) {
+//			Collections.shuffle(lightIds);
+//		}
+//		for (LightId lightId : lightIds) {
+//			LightCommand lightCommand = new LightCommand();
+//
+//			LightData lightData = new LightData(lightId.strandNum, lightId.lightNum, 0, 0, 0, 0, LightController.MAX_INTENSITY);
+//			lightCommand.setLightData(lightData);
+//
+//			lc.sendMessage(lightCommand);
+//			if (color == 13) {
+//				color = 1;
+//			} else {
+//				color++;
+//			}
+//
+//		}
 	}
 
 	public static void main(String[] args) throws IOException {

@@ -93,14 +93,14 @@ void setup()
   Udp.begin(localPort);
 
   //Create Serial Object
-  Serial.begin(9600);
+  //Serial.begin(9600);
   
   // print your local IP address:
-  Serial.print("My IP address: ");
-  Serial.println(Ethernet.localIP());
+  //Serial.print("My IP address: ");
+  //Serial.println(Ethernet.localIP());
   
   resetPacketBuffer();
-  Serial.println(F("We are good to go!"));
+  //Serial.println(F("We are good to go!"));
 }
 
 void resetPacketBuffer() {
@@ -109,8 +109,8 @@ void resetPacketBuffer() {
 
 // 0 = commnad, 1 = size, 2 = string, 3 = bulb...
 void processSingleLightCommand(int offset) {
-  //Serial.print(F("Offset: "));
-  //Serial.println(offset);
+  ////Serial.print(F("Offset: "));
+  ////Serial.println(offset);
   long lightStringIndex  = (int)packetBuffer[2+offset] & 0xFF;
   long bulbIndex         = (int)packetBuffer[3+offset] & 0xFF;
   long colorSelect       = (int)packetBuffer[4+offset] & 0xFF;
@@ -144,6 +144,7 @@ void processSingleLightCommand(int offset) {
 void processMultiLightCommand() {
   long numberOfCommands  = (int)packetBuffer[1] & 0xFF;
   
+  
   for (int i = 0; i < numberOfCommands; ++i)
   {
     processSingleLightCommand(i*7);
@@ -151,7 +152,7 @@ void processMultiLightCommand() {
 }
 
 void error() {
-  Serial.println(F("Unknown COMMAND failed"));
+  //Serial.println(F("Unknown COMMAND failed"));
   lights = &lights_13;
   lights->fill_color(0, lights->get_light_count(), G35::MAX_INTENSITY, COLOR_WARMWHITE);
   delay(100);
@@ -232,8 +233,8 @@ void setString(long lightStringIndex) {
 }
 
 void allOffFade(long fadeDelay) {
-  //Serial.print("Fade Delay: ");
-  //Serial.println(fadeDelay);
+  ////Serial.print("Fade Delay: ");
+  ////Serial.println(fadeDelay);
   if (fadeDelay <= 0) {
     lights_1.broadcast_intensity(0);
     lights_2.broadcast_intensity(0);
@@ -272,29 +273,27 @@ void allOffFade(long fadeDelay) {
 void loop()
 {
 
-  // What the JSON looks like {"string":1,"bulb":2,"r":3,"g":4,"b":5,"brightness":6}
-
   // if there's data available, read a packet
   int packetSize = Udp.parsePacket();
   if (packetSize)
   {
-    Serial.print(F("Received packet of size: "));
-    Serial.println(packetSize);
+    //Serial.print(F("Received packet of size: "));
+    //Serial.println(packetSize);
 
     // read the packet into packetBufffer
     Udp.read(packetBuffer, UDP_TX_PACKET_MAX_SIZE);
-//    Serial.println(F("Data: "));
-//    Serial.println((int)packetBuffer[0] & 0xFF);
-//    Serial.println((int)packetBuffer[1] & 0xFF);
-//    Serial.println((int)packetBuffer[2] & 0xFF);
-//    Serial.println((int)packetBuffer[3] & 0xFF);
-//    Serial.println((int)packetBuffer[4] & 0xFF);
-//    Serial.println((int)packetBuffer[5] & 0xFF);
-//    Serial.println((int)packetBuffer[6] & 0xFF);
+//    //Serial.println(F("Data: "));
+//    //Serial.println((int)packetBuffer[0] & 0xFF);
+//    //Serial.println((int)packetBuffer[1] & 0xFF);
+//    //Serial.println((int)packetBuffer[2] & 0xFF);
+//    //Serial.println((int)packetBuffer[3] & 0xFF);
+//    //Serial.println((int)packetBuffer[4] & 0xFF);
+//    //Serial.println((int)packetBuffer[5] & 0xFF);
+//    //Serial.println((int)packetBuffer[6] & 0xFF);
 
     int command  = (int)packetBuffer[0] & 0xFF;
-    Serial.print(F("Got command: "));
-    Serial.println(command);
+    //Serial.print(F("Got command: "));
+    //Serial.println(command);
     if (command==0) {
       processSingleLightCommand(0);
     } else if (command==1) {
@@ -302,8 +301,8 @@ void loop()
     } else if (command==2) {
       allOffFade(packetBuffer[1] & 0xFF);
     } else {
-      Serial.print(F("Unknown Command: "));
-      Serial.println(command);
+      //Serial.print(F("Unknown Command: "));
+      //Serial.println(command);
       error();
     }
 
