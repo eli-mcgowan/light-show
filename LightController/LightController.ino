@@ -34,6 +34,7 @@
 #define FADE_ALL_COMMAND      (2)
 #define FILL_COMMAND          (3)
 
+
 // Strings of lights
 G35String* lights = NULL;
 G35String lights_1(G35_PIN_1, LIGHT_COUNT);
