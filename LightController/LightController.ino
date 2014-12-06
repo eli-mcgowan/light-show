@@ -26,6 +26,14 @@
 #define G35_PIN_12 (31)
 #define G35_PIN_13 (29)
 
+#define NUMBER_OF_STRANDS (13)
+
+// Commands
+#define SINGLE_LIGHT_COMMAND  (0)
+#define MULTI_LIGHT_COMMAND   (1)
+#define FADE_ALL_COMMAND      (2)
+#define FILL_COMMAND          (3)
+
 // Strings of lights
 G35String* lights = NULL;
 G35String lights_1(G35_PIN_1, LIGHT_COUNT);
@@ -88,16 +96,19 @@ void setup()
   delay(10);
   lights_13.enumerate();
 
+
+  //Create Serial Object
+  Serial.begin(9600);
+  Serial.println("Serial has begun");
+
   // Start the Ethernet and UDP:
   Ethernet.begin(mac);
   Udp.begin(localPort);
 
-  //Create Serial Object
-  //Serial.begin(9600);
   
   // print your local IP address:
-  //Serial.print("My IP address: ");
-  //Serial.println(Ethernet.localIP());
+  Serial.print("My IP address: ");
+  Serial.println(Ethernet.localIP());
   
   resetPacketBuffer();
   //Serial.println(F("We are good to go!"));
@@ -148,6 +159,51 @@ void processMultiLightCommand() {
   for (int i = 0; i < numberOfCommands; ++i)
   {
     processSingleLightCommand(i*7);
+  }
+}
+
+void processFillCommand() {
+  
+ Serial.println(F("processFillCommand "));
+  long lightStringIndex  = (int)packetBuffer[1] & 0xFF;
+  long colorSelect       = (int)packetBuffer[2] & 0xFF;
+  long r                 = (int)packetBuffer[3] & 0xFF;
+  long g                 = (int)packetBuffer[4] & 0xFF;
+  long b                 = (int)packetBuffer[5] & 0xFF;
+  long brightness        = (int)packetBuffer[6] & 0xFF;
+
+  if (brightness > G35::MAX_INTENSITY) {
+    brightness == G35::MAX_INTENSITY;
+  }
+  if (brightness < 0) {
+    brightness = 0;
+  }
+  
+      Serial.print(F("lightStringIndex: "));
+      Serial.println(lightStringIndex);      
+      Serial.print(F("colorSelect: "));
+      Serial.println(colorSelect);      
+      Serial.print(F("r: "));
+      Serial.println(r);      
+      Serial.print(F("g: "));
+      Serial.println(g);      
+      Serial.print(F("b: "));
+      Serial.println(b);
+      Serial.print(F("brightness: "));
+      Serial.println(brightness);
+  
+  if(lightStringIndex == 0 ){
+    for(int strandIndex = 1; strandIndex < NUMBER_OF_STRANDS; strandIndex++){
+      // Get the String
+      setString(strandIndex);
+      // Apply Light settings
+      lights->fill_color(0, lights->get_light_count(), brightness, getColor(colorSelect, r, g, b));
+    }
+  } else {
+    // Get the String
+    setString(lightStringIndex);
+    // Apply Light settings
+    lights->fill_color(0, lights->get_light_count(), brightness, getColor(colorSelect, r, g, b));
   }
 }
 
@@ -294,15 +350,17 @@ void loop()
     int command  = (int)packetBuffer[0] & 0xFF;
     //Serial.print(F("Got command: "));
     //Serial.println(command);
-    if (command==0) {
+    if (command==SINGLE_LIGHT_COMMAND) {
       processSingleLightCommand(0);
-    } else if (command==1) {
+    } else if (command==MULTI_LIGHT_COMMAND) {
       processMultiLightCommand();
-    } else if (command==2) {
+    } else if (command==FADE_ALL_COMMAND) {
       allOffFade(packetBuffer[1] & 0xFF);
+    }  else if (command==FILL_COMMAND) {
+      processFillCommand();
     } else {
-      //Serial.print(F("Unknown Command: "));
-      //Serial.println(command);
+      Serial.print(F("Unknown Command: "));
+      Serial.println(command);
       error();
     }
 
