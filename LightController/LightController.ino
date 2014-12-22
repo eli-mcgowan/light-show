@@ -194,7 +194,7 @@ void processFillCommand() {
       Serial.println(brightness);
   
   if(lightStringIndex == 0 ){
-    for(int strandIndex = 1; strandIndex < NUMBER_OF_STRANDS; strandIndex++){
+    for(int strandIndex = 1; strandIndex <= NUMBER_OF_STRANDS; strandIndex++){
       // Get the String
       setString(strandIndex);
       // Apply Light settings

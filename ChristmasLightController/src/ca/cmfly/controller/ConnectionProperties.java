@@ -7,6 +7,7 @@ package ca.cmfly.controller;
 public class ConnectionProperties {
 
 	private static final String ENV = ConnectionProperties.ENV_CHRIS_LIVE;
+//	private static final String ENV = ConnectionProperties.ENV_CHRIS_TEST;
 	
 	private static final String ENV_CHRIS_LIVE = "ENV_CHRIS_LIVE";
 	private static final String ENV_CHRIS_TEST = "ENV_CHRIS_TEST";

@@ -15,8 +15,6 @@ import ca.cmfly.controller.commands.FadeCommand;
 import ca.cmfly.controller.commands.LightCommand;
 import ca.cmfly.controller.commands.LightData;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 public class LightController {
 
 	public static byte MAX_INTENSITY = (byte) 0xcc;
@@ -58,7 +56,7 @@ public class LightController {
 	 * @return Integer between min and max, inclusive.
 	 * @see java.util.Random#nextInt(int)
 	 */
-	private static int randInt(int min, int max) {
+	public static int randInt(int min, int max) {
 
 		// Usually this can be a field rather than a method variable
 		Random rand = new Random();
@@ -70,7 +68,7 @@ public class LightController {
 		return randomNum;
 	}
 
-	public void randomizeLightColors() throws JsonProcessingException, IOException {
+	public void randomizeLightColors() throws IOException {
 		randomizeLightColors(0, false);
 	}
 
@@ -89,14 +87,6 @@ public class LightController {
 			} catch (InterruptedException e) {
 
 			}
-		}
-	}
-
-	public void lightsOff() throws IOException {
-		List<LightId> lightIds = getLightIds();
-		for (LightId lightId : lightIds) {
-			LightData lightdata = new LightData(lightId.strandNum, lightId.lightNum, 0, 0, 0, 0, 0);
-			this.sendMessage(new LightCommand(lightdata));
 		}
 	}
 

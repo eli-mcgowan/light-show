@@ -58,6 +58,7 @@ public class RedAndWhite extends LightShow{
 		}
 
 		RedAndWhite raw = new RedAndWhite(random, fadeDelay);
+		//RedAndWhite raw = new RedAndWhite(true, 1);
 		raw.runLightShow();
 
 	}

@@ -34,7 +34,7 @@ public class Twinkle extends LightShow {
 		for (LightId lightId : lightIds) {
 			LightCommand lightCommand = new LightCommand();
 
-			LightData lightData = new LightData(lightId.strandNum, lightId.lightNum, ArduinoColor.COLOR_WARMWHITE, 0, 0, 0, LightController.MAX_INTENSITY);
+			LightData lightData = new LightData(lightId.strandNum, lightId.lightNum, ArduinoColor.COLOR_WARMWHITE, 0, 0, 0, 80);
 			lightCommand.setLightData(lightData);
 
 			lc.sendMessage(lightCommand);
@@ -58,7 +58,7 @@ public class Twinkle extends LightShow {
 			lightTwinkles.add(lightTwinkle);
 	
 			LightCommand lightCommand = new LightCommand();
-			LightData lightData = new LightData(lightId.strandNum, lightId.lightNum, ArduinoColor.COLOR_WHITE, 0, 0, 0, LightController.MAX_INTENSITY);
+			LightData lightData = new LightData(lightId.strandNum, lightId.lightNum, ArduinoColor.COLOR_WARMWHITE, 0, 0, 0, LightController.MAX_INTENSITY);
 			lightCommand.setLightData(lightData);
 			lc.sendMessage(lightCommand);
 			nextTwinkleTimeInMillis = currentTimeInMillis + rand.nextInt(maxTimeBetweenTwinkles);
@@ -70,7 +70,7 @@ public class Twinkle extends LightShow {
 				// return to normal
 				LightId lightId = lightTwinkle.lightId;
 				LightCommand lightCommand2 = new LightCommand();
-				LightData lightData2 = new LightData(lightId.strandNum, lightId.lightNum, ArduinoColor.COLOR_WARMWHITE, 0, 0, 0, LightController.MAX_INTENSITY);
+				LightData lightData2 = new LightData(lightId.strandNum, lightId.lightNum, ArduinoColor.COLOR_WARMWHITE, 0, 0, 0, 80);
 				lightCommand2.setLightData(lightData2);
 				lc.sendMessage(lightCommand2);
 				completedLightTwinkles.add(lightTwinkle);
