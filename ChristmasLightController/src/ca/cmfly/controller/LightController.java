@@ -80,7 +80,7 @@ public class LightController {
 		}
 
 		for (LightId lightId : lightIds) {
-			LightData lightdata = new LightData(lightId.strandNum, lightId.lightNum, randInt(1, 13), 0, 0, 0, randInt(1, MAX_INTENSITY));
+			LightData lightdata = new LightData(lightId.strandNum, lightId.lightNum, getRandomColor(), 0, 0, 0, randInt(1, MAX_INTENSITY));
 			this.sendMessage(new LightCommand(lightdata));
 			try {
 				Thread.sleep(delay);
@@ -88,6 +88,10 @@ public class LightController {
 
 			}
 		}
+	}
+	
+	public int getRandomColor(){
+		return randInt(1, 13);
 	}
 
 	public void lightsOffQuickly() throws IOException {

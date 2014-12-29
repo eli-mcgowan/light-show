@@ -25,6 +25,10 @@ public class LightCommandGroup extends Command {
 	public List<LightData> getLightData() {
 		return lightData;
 	}
+	
+	public boolean hasCommands(){
+		return !lightData.isEmpty();
+	}
 
 	public void setLightData(List<LightData> lightData) {
 		this.lightData = lightData;
