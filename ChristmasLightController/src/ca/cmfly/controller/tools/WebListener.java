@@ -47,6 +47,7 @@ public class WebListener extends LightShow {
 		if(udpCommandTask.isDone()){
 			try {
 				LightCommand lightCommand = udpCommandTask.get();
+				System.out.println(lightCommand);
 				lc.sendMessage(lightCommand);
 				startUdpCommandTask();
 			} catch (InterruptedException | ExecutionException e) {

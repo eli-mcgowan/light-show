@@ -21,71 +21,80 @@ import ca.cmfly.controller.commands.LightData;
  */
 public class SnowfallShow extends LightShow {
 	private static final int NUM_LIGHTS = 3;
-	private static final int NUM_ACTIVE_STRANDS = 3;
+	private static final int NUM_ACTIVE_STRANDS = 5;
 	private static final int TIME_BETWEEN_MOVES = 250;
 	private static final int LIGHT_COLOR = ArduinoColor.COLOR_WHITE;
 	private static final int LIGHT_OFF_COLOR = ArduinoColor.COLOR_BLACK;
 	
-	List<Integer> availableStrandIndices;
-	private byte[] activeStrandIndices;
-	private byte lowBulb;
-	private int timeBetweenMoves;
-	private long nextMoveTimeInMillis;
-	private int numLightsAtATime;
-	private boolean startNewStrands;
+	private final int timeBetweenMoves;
+	private final int numLightsAtATime;
+	private final int numActiveStrands;
+	private final int lightColor;
+	private final int lightOffColor;
+
+	private List<Integer> availableStrandIndices;
+	private List<SnowfallActiveStrand> activeStrands;
+	private long nextStrandStartTime;
+
 	
 	public SnowfallShow() throws IOException {
+		this(NUM_LIGHTS, TIME_BETWEEN_MOVES, NUM_ACTIVE_STRANDS, LIGHT_COLOR, LIGHT_OFF_COLOR);
+	}
+	
+	public SnowfallShow(int numLightsAtATime, int timeBetweenMoves, int numActiveStrands, int lightColor, int lightOffColor) throws IOException {
 		super();
-		numLightsAtATime = NUM_LIGHTS;
-		timeBetweenMoves = TIME_BETWEEN_MOVES;
+		this.numLightsAtATime = numLightsAtATime;
+		this.numActiveStrands = numActiveStrands;
+		this.timeBetweenMoves = timeBetweenMoves;
+		this.lightColor = lightColor;
+		this.lightOffColor = lightOffColor;
 		availableStrandIndices = new ArrayList<>();
+		activeStrands = new ArrayList<>();
 	}
 	
 	@Override
 	public void init() throws IOException {
 		FillStrandCommand fillCommand = null;
-		fillCommand = new FillStrandCommand((byte) 0, LIGHT_OFF_COLOR, 0, 0, 0, LightController.MAX_INTENSITY);
+		fillCommand = new FillStrandCommand((byte) 0, lightOffColor, 0, 0, 0, LightController.MAX_INTENSITY);
 		lc.sendMessage(fillCommand);
-		//lc.lightsOffWithDelay(0);
-		activeStrandIndices = new byte[NUM_ACTIVE_STRANDS];
-		startNewStrands = true;
-		nextMoveTimeInMillis = System.currentTimeMillis();
+		nextStrandStartTime = System.currentTimeMillis();
 	}
 
 	@Override
 	public void doit() throws IOException {
 		long currentTimeInMillis = System.currentTimeMillis();
 
-		if(startNewStrands){
-			startNewStrands = false;
-			lowBulb = (byte) (25 - numLightsAtATime);
+		List<SnowfallActiveStrand> strandsToRemove = new ArrayList<>();
+		
+		if(activeStrands.size() < numActiveStrands && currentTimeInMillis > nextStrandStartTime){
+			// Init Strand
+			SnowfallActiveStrand activeStrand = new SnowfallActiveStrand();
+			activeStrand.strandNum = getNextStrand();
+			activeStrand.lowBulb = (byte) (25 - numLightsAtATime);
+			activeStrand.nextMoveTimeInMillis = currentTimeInMillis + timeBetweenMoves;
+			activeStrands.add(activeStrand);
+			turnFirstSetOfLightsOn(activeStrand);
 			
-			// Init Strands
-			for(int i=0; i<activeStrandIndices.length; i++){
-				activeStrandIndices[i] = getNextStrand();
-			}
-			
-			// turn strand lights on
-			for(int i=0; i<activeStrandIndices.length; i++){
-				turnFirstSetOfLightsOn(activeStrandIndices[i]);
-			}
-		} else if(currentTimeInMillis > nextMoveTimeInMillis){
-			nextMoveTimeInMillis = currentTimeInMillis + timeBetweenMoves;
-			
-			lowBulb--;
-			if(lowBulb >= 0){
-				for(int i=0; i<activeStrandIndices.length; i++){
-					shiftLightsOne(activeStrandIndices[i]);
+			final int NUM_BULBS = 25;
+			int getAverageTimeBetweenStrands = ((NUM_BULBS - numLightsAtATime) * timeBetweenMoves) / numActiveStrands;
+			nextStrandStartTime = currentTimeInMillis + LightController.randInt((int)(getAverageTimeBetweenStrands * 0.5), (int)(getAverageTimeBetweenStrands * 1.5));
+		} 
+		for(SnowfallActiveStrand activeStrand: activeStrands){
+			if(currentTimeInMillis > activeStrand.nextMoveTimeInMillis){
+				activeStrand.nextMoveTimeInMillis = currentTimeInMillis + timeBetweenMoves;
+				activeStrand.lowBulb--;
+				if(activeStrand.lowBulb >= 0){
+					shiftLightsOne(activeStrand);
+				} else{
+					shiftLightsOne(activeStrand);
+					turnOffLights(activeStrand);
+					strandsToRemove.add(activeStrand);
 				}
-			} else{
-				for(int i=0; i<activeStrandIndices.length; i++){
-					shiftLightsOne(activeStrandIndices[i]);
-					turnOffLights(activeStrandIndices[i]);
-				}
-				
-				startNewStrands = true;
 			}
-			
+		}
+		
+		for(SnowfallActiveStrand strandToRemove: strandsToRemove){
+			activeStrands.remove(strandToRemove);
 		}
 		
 	}
@@ -100,34 +109,34 @@ public class SnowfallShow extends LightShow {
 		return availableStrandIndices.remove(0).byteValue();
 	}
 
-	private void turnFirstSetOfLightsOn(int strandIndex) throws IOException{
+	private void turnFirstSetOfLightsOn(SnowfallActiveStrand activeStrand) throws IOException{
 		LightCommandGroup lightCommandGroup = new LightCommandGroup();
 		
 		for(int i=0; i<numLightsAtATime; i++){
-			LightData lightData = new LightData((byte)strandIndex, (byte)(lowBulb + i), LIGHT_COLOR, 0, 0, 0, LightController.MAX_INTENSITY);
+			LightData lightData = new LightData((byte)activeStrand.strandNum, (byte)(activeStrand.lowBulb + i), lightColor, 0, 0, 0, LightController.MAX_INTENSITY);
 			lightCommandGroup.addLightData(lightData);
 		}
 		
 		lc.sendMessage(lightCommandGroup);
 	}
 
-	private void shiftLightsOne(int strandIndex) throws IOException {
+	private void shiftLightsOne(SnowfallActiveStrand activeStrand) throws IOException {
 		LightCommandGroup lightCommandGroup = new LightCommandGroup();
 		
 		// Turn off the high bulb
-		LightData lightData4 = new LightData((byte)strandIndex, (byte)(lowBulb + numLightsAtATime), LIGHT_OFF_COLOR, 0, 0, 0, LightController.MAX_INTENSITY);
+		LightData lightData4 = new LightData((byte)activeStrand.strandNum, (byte)(activeStrand.lowBulb + numLightsAtATime), lightOffColor, 0, 0, 0, LightController.MAX_INTENSITY);
 		lightCommandGroup.addLightData(lightData4);
 
-		LightData lightData0 = new LightData((byte)strandIndex, (byte)(lowBulb + 0), LIGHT_COLOR, 0, 0, 0, LightController.MAX_INTENSITY);
+		LightData lightData0 = new LightData((byte)activeStrand.strandNum, (byte)(activeStrand.lowBulb + 0), lightColor, 0, 0, 0, LightController.MAX_INTENSITY);
 		lightCommandGroup.addLightData(lightData0);
 
 		lc.sendMessage(lightCommandGroup);
 	}
 
-	private void turnOffLights(byte strandIndex) throws IOException {
+	private void turnOffLights(SnowfallActiveStrand activeStrand) throws IOException {
 		LightCommandGroup lightCommandGroup = new LightCommandGroup();
 		for(int i=0; i<numLightsAtATime; i++){
-			LightData lightData = new LightData(strandIndex, (byte)(lowBulb + i + 1), LIGHT_OFF_COLOR, 0, 0, 0, LightController.MAX_INTENSITY);
+			LightData lightData = new LightData((byte)activeStrand.strandNum, (byte)(activeStrand.lowBulb + i + 1), lightOffColor, 0, 0, 0, LightController.MAX_INTENSITY);
 			lightCommandGroup.addLightData(lightData);
 		}
 		
@@ -138,4 +147,11 @@ public class SnowfallShow extends LightShow {
 		SnowfallShow show = new SnowfallShow();
 		show.runLightShow();
 	}
+	
+	public class SnowfallActiveStrand {
+		int strandNum;
+		int lowBulb;
+		long nextMoveTimeInMillis;
+	}
+
 }

@@ -3,7 +3,6 @@ package ca.cmfly.controller.programs;
 import java.io.IOException;
 import java.util.Calendar;
 
-import ca.cmfly.controller.ArduinoColor;
 import ca.cmfly.controller.LightController;
 import ca.cmfly.controller.commands.FillStrandCommand;
 

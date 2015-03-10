@@ -1,5 +1,8 @@
 package ca.cmfly.controller;
 
+/**
+ * Stored as a base 255 color.
+ */
 public class RGB {
 	private int r;
 	private int g;

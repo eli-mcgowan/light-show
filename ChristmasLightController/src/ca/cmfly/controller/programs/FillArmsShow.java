@@ -10,7 +10,7 @@ import ca.cmfly.controller.LightController;
 import ca.cmfly.controller.commands.FillStrandCommand;
 
 /**
- * Fill random (each once) entire strand on/off as fast as possible
+ * Fill random (each color once) entire strand on/off.
  *
  */
 public class FillArmsShow extends LightShow {

@@ -11,7 +11,10 @@ import ca.cmfly.controller.LightId;
 import ca.cmfly.controller.commands.LightCommand;
 import ca.cmfly.controller.commands.LightData;
 
-
+/**
+ * Lights entire tree a gentle warm white and then randomly twinkles a random light(s) to full brightness.
+ *
+ */
 public class Twinkle extends LightShow {
 	
 	class LightTwinkle{

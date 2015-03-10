@@ -12,6 +12,9 @@ import ca.cmfly.controller.commands.FillStrandCommand;
 import ca.cmfly.controller.commands.LightCommandGroup;
 import ca.cmfly.controller.commands.LightData;
 
+/**
+ * Single light shoots up tree and then out every branch.
+ */
 public class ReverseDrip extends LightShow {
 	private static final int TIME_BETWEEN_MOVES = 50;
 	private Map<Integer, Integer> nextLights;
@@ -24,8 +27,6 @@ public class ReverseDrip extends LightShow {
 		timeBetweenMoves = TIME_BETWEEN_MOVES;
 	}
 	
-	
-
 	@Override
 	public void init() throws IOException {
 		FillStrandCommand fillCommand = null;
@@ -109,6 +110,7 @@ public class ReverseDrip extends LightShow {
 			}
 			
 			if(lightCommandGroup.hasCommands()){
+				System.out.println("LightData Size: " + lightCommandGroup.getLightData().size());
 				lc.sendMessage(lightCommandGroup);
 			}
 			

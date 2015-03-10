@@ -10,6 +10,12 @@ import ca.cmfly.controller.LightId;
 import ca.cmfly.controller.commands.LightCommandGroup;
 import ca.cmfly.controller.commands.LightData;
 
+/**
+ * Fills all lights with the same color. Loops through Arduino colors.
+ * <br />
+ * Set to stop after first pass.
+ *
+ */
 public class FillAllShow extends LightShow {
 
 	public FillAllShow() throws IOException {
@@ -26,6 +32,7 @@ public class FillAllShow extends LightShow {
 		for(int color: ArduinoColor.COLORS){
 			fillAllColor(color);
 			try {
+				// FIXME: Eliminate Thread sleeps from doit loop
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block

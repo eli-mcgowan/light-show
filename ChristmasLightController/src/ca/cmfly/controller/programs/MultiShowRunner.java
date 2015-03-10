@@ -8,6 +8,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
+/**
+ * Runs Multiple light shows in order, then repeats
+ *
+ */
 public class MultiShowRunner extends LightShow{
 	public static final String UDP_COMMAND_HOST = "localhost";
 	public static final int UDP_COMMAND_PORT = 8765;
@@ -30,10 +34,11 @@ public class MultiShowRunner extends LightShow{
 		lightShows.add(new HorseOfADifferentColorShow());
 		//lightShows.add(new ChristmasFillShow());
 		lightShows.add(new RandomColorShow(true));
-		lightShows.add(new Twinkle());
-		lightShows.add(new FillArmsShow());
+		//lightShows.add(new Twinkle());
+		//lightShows.add(new FillArmsShow());
 		lightShows.add(new SnowfallShow());
 		lightShows.add(new RedAndWhite(true, 1));
+		lightShows.add(new ReverseDrip2());
 		
 		currentLightShowIndex = 0;
 		lightShowTimer = new LightShowTimer(60000);

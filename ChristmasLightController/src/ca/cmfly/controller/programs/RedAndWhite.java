@@ -8,6 +8,9 @@ import ca.cmfly.controller.LightId;
 import ca.cmfly.controller.commands.LightCommand;
 import ca.cmfly.controller.commands.LightData;
 
+/**
+ * Random fills all lights red and white, and then fades out.
+ */
 public class RedAndWhite extends LightShow{
 	private boolean random;
 	private int fadeDelay;
@@ -28,11 +31,11 @@ public class RedAndWhite extends LightShow{
 			Collections.shuffle(lightIds);
 		}
 		
-		int colour = 11;
+		int color = 11;
 		for (LightId lightId : lightIds) {
 			LightCommand lightCommand = new LightCommand();
 
-			LightData lightData = new LightData(lightId.strandNum, lightId.lightNum, colour, 0, 0, 0, LightController.MAX_INTENSITY);
+			LightData lightData = new LightData(lightId.strandNum, lightId.lightNum, color, 0, 0, 0, LightController.MAX_INTENSITY);
 			lightCommand.setLightData(lightData);
 //
 //			ObjectMapper mapper = new ObjectMapper();
@@ -40,10 +43,10 @@ public class RedAndWhite extends LightShow{
 //			System.out.println(message);
 
 			lc.sendMessage(lightCommand);
-			if (colour == 11) {
-				colour = 2;
+			if (color == 11) {
+				color = 2;
 			} else {
-				colour = 11;
+				color = 11;
 			}
 		}
 	}

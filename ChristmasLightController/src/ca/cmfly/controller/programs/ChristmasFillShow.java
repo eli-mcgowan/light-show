@@ -8,6 +8,15 @@ import ca.cmfly.controller.ChristmasColor;
 import ca.cmfly.controller.LightController;
 import ca.cmfly.controller.commands.FillStrandCommand;
 
+/**
+ * Alternates between white, red and green fill of all lights.
+ * <br />
+ * Options:
+ * <ul>
+ * <li>Can set the lights to turn black between colors<li>
+ * </ul>
+ *
+ */
 public class ChristmasFillShow extends LightShow {
 	static final boolean BLACK_BETWEEN_COLORS = false;
 	static int black_time = 0; 

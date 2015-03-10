@@ -8,6 +8,9 @@ import ca.cmfly.controller.LightId;
 import ca.cmfly.controller.commands.LightCommand;
 import ca.cmfly.controller.commands.LightData;
 
+/**
+ * Fills all lights (selected randomly) one-by-one with a random color, and then turns all lights off (selected randomly).
+ */
 public class RandomColorShow extends LightShow {
 	private boolean random;
 

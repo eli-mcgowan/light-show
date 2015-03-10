@@ -3,11 +3,14 @@ package ca.cmfly.controller.programs;
 import java.io.IOException;
 import java.util.Calendar;
 
-import ca.cmfly.controller.ArduinoColor;
 import ca.cmfly.controller.ChristmasColor;
 import ca.cmfly.controller.LightController;
 import ca.cmfly.controller.commands.FillStrandCommand;
 
+/**
+ * Fills all lights with Christmas colors as quickly as possible. (due to extreme speed, some strands are visibly different colors at a given time)
+ *
+ */
 public class FillAllStrandsShow extends LightShow {
 	
 	public FillAllStrandsShow() throws IOException {
